@@ -6,11 +6,17 @@
   <title>Agendamento - Studio & Salão de Beleza</title>
   
   <style>
+    /* VARIÁVEIS DE COR PADRÃO */
+    :root {
+      --primary-color: #8e3a59;
+      --bg-color: #fdfaf9;
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     html { scroll-behavior: smooth; }
     
     body {
-      background-color: #fdfaf9;
+      background-color: var(--bg-color);
       color: #333333;
       padding-top: 70px;
       -webkit-touch-callout: none;
@@ -30,7 +36,7 @@
     }
     .animate-fade-in { animation: fadeIn 0.8s ease forwards; }
     .hover-scale { transition: transform 0.3s ease, box-shadow 0.3s ease; }
-    .hover-scale:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(142, 58, 89, 0.15); }
+    .hover-scale:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); }
 
     header.navbar {
       position: fixed; top: 0; left: 0; width: 100%; height: 70px;
@@ -38,16 +44,16 @@
       display: flex; justify-content: space-between; align-items: center; padding: 0 25px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.03);
     }
-    .navbar-brand { font-size: 1.3rem; font-weight: bold; color: #8e3a59; text-decoration: none; }
+    .navbar-brand { font-size: 1.3rem; font-weight: bold; color: var(--primary-color); text-decoration: none; }
     .nav-links { display: flex; gap: 20px; list-style: none; }
     .nav-links a { color: #666; text-decoration: none; font-size: 0.95rem; font-weight: 500; transition: 0.2s; }
-    .nav-links a:hover { color: #8e3a59; }
+    .nav-links a:hover { color: var(--primary-color); }
 
     .container { max-width: 900px; width: 90%; margin: 30px auto; background: #ffffff; padding: 30px; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.05); border: 1px solid #f7edee; }
-    h1, h2, h3 { text-align: center; margin-bottom: 20px; color: #8e3a59; }
+    h1, h2, h3 { text-align: center; margin-bottom: 20px; color: var(--primary-color); }
     
     .hero-section { text-align: center; padding: 30px 10px; border-bottom: 1px solid #f0e4e8; margin-bottom: 30px; }
-    .schedule-badge { display: inline-block; background: #fbf0f3; color: #8e3a59; padding: 6px 18px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; margin-bottom: 15px; border: 1px solid #e2c2cb; }
+    .schedule-badge { display: inline-block; background: #fbf0f3; color: var(--primary-color); padding: 6px 18px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; margin-bottom: 15px; border: 1px solid #e2c2cb; }
     .hero-title { font-size: 2.2rem; color: #2d2a2b; margin-bottom: 10px; }
     .hero-subtitle { color: #777; font-size: 1rem; margin-bottom: 20px; }
 
@@ -57,16 +63,16 @@
 
     .barbeiros-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; margin-top: 10px; }
     .barbeiro-card { background: #ffffff; border: 2px solid #f2e2e6; border-radius: 12px; padding: 15px; text-align: center; cursor: pointer; transition: 0.3s; }
-    .barbeiro-card:hover, .barbeiro-card.selected { border-color: #8e3a59; background: #fbf0f3; }
-    .barbeiro-card img { width: 75px; height: 75px; border-radius: 50%; object-fit: cover; margin-bottom: 8px; border: 2px solid #8e3a59; }
+    .barbeiro-card:hover, .barbeiro-card.selected { border-color: var(--primary-color); background: #fbf0f3; }
+    .barbeiro-card img { width: 75px; height: 75px; border-radius: 50%; object-fit: cover; margin-bottom: 8px; border: 2px solid var(--primary-color); }
 
     .slots-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 10px; }
     .slot-btn { padding: 10px; background: #ffffff; border: 1px solid #e0ccd2; color: #444; border-radius: 8px; cursor: pointer; transition: 0.2s; font-size: 0.9rem; }
-    .slot-btn:hover:not(:disabled), .slot-btn.selected { background: #8e3a59; color: #ffffff; font-weight: bold; }
+    .slot-btn:hover:not(:disabled), .slot-btn.selected { background: var(--primary-color); color: #ffffff; font-weight: bold; }
     .slot-btn:disabled, .slot-btn.ocupado { background: #f5f5f5 !important; border-color: #e0e0e0 !important; color: #aaa !important; cursor: not-allowed !important; opacity: 0.6; }
 
-    button.submit-btn { width: 100%; padding: 15px; background: #8e3a59; color: #ffffff; border: none; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; }
-    button.submit-btn:hover { background: #732d47; }
+    button.submit-btn { width: 100%; padding: 15px; background: var(--primary-color); color: #ffffff; border: none; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; }
+    button.submit-btn:hover { opacity: 0.9; }
 
     .confirmation-box { display: none; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 20px; border-radius: 12px; margin-top: 20px; }
     .action-btn { display: block; width: 100%; padding: 12px; border-radius: 8px; text-align: center; font-weight: bold; text-decoration: none; margin-top: 10px; font-size: 0.95rem; }
@@ -161,7 +167,7 @@
 
   <section class="section-standard" id="local">
     <h2>📍 Nossa Localização</h2>
-    <p id="displayEndereco" style="text-align: center; color: #8e3a59; margin-bottom: 15px; font-weight: bold;">
+    <p id="displayEndereco" style="text-align: center; color: var(--primary-color); margin-bottom: 15px; font-weight: bold;">
       Rua Santo Antônio, 622 - Vila Caiçara - Praia Grande/SP
     </p>
     <div class="map-wrapper">
@@ -197,6 +203,14 @@
 
   function aplicarConfiguracoesSite() {
     const configSite = JSON.parse(localStorage.getItem('configSite')) || {};
+
+    // APLICAÇÃO DINÂMICA DE CORES
+    if (configSite.corPrincipal) {
+      document.documentElement.style.setProperty('--primary-color', configSite.corPrincipal);
+    }
+    if (configSite.corFundo) {
+      document.documentElement.style.setProperty('--bg-color', configSite.corFundo);
+    }
 
     if (configSite.horarioTxt) document.getElementById('displayHorarioTxt').innerText = configSite.horarioTxt;
     if (configSite.endereco) {
@@ -361,7 +375,6 @@
     const dataFormatada = data.split('-').reverse().join('/');
     const box = document.getElementById('confirmationBox');
 
-    // Salvar Agendamento no LocalStorage
     const agendamentos = JSON.parse(localStorage.getItem('agendamentos')) || [];
     agendamentos.push({
       id: Date.now().toString(),

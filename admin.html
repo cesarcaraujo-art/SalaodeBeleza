@@ -39,6 +39,11 @@
     input[type="file"] { display: none; }
     .custom-file-btn { display: inline-block; padding: 10px 15px; background: #f5f5f5; border: 1px solid #ccc; color: #555; border-radius: 8px; cursor: pointer; font-size: 0.85rem; width: 100%; text-align: center; }
 
+    /* ESTILO DOS SELETORES DE COR */
+    .color-picker-group { display: flex; gap: 15px; margin-bottom: 15px; }
+    .color-picker-item { flex: 1; }
+    .color-picker-item input[type="color"] { width: 100%; height: 40px; border-radius: 8px; border: 1px solid #e0ccd2; cursor: pointer; padding: 2px; background: #fff; }
+
     #loginSection, #adminPanel { display: none; }
     .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
     .logout-link { color: #dc2626; font-size: 0.9rem; cursor: pointer; }
@@ -147,6 +152,18 @@
 
     <div id="siteTab" class="tab-content" style="display: none;">
       <div class="admin-card">
+        <label>🎨 Personalização de Cores do Site:</label>
+        <div class="color-picker-group">
+          <div class="color-picker-item">
+            <label>Cor Principal (Botões/Títulos):</label>
+            <input type="color" id="configCorPrincipal" value="#8e3a59">
+          </div>
+          <div class="color-picker-item">
+            <label>Cor de Fundo da Página:</label>
+            <input type="color" id="configCorFundo" value="#fdfaf9">
+          </div>
+        </div>
+
         <label>📱 WhatsApp para Contato (com DDD, apenas números):</label>
         <input type="text" id="configWhats" placeholder="Ex: 5513999999999">
 
@@ -184,7 +201,7 @@
           </div>
         </div>
 
-        <button class="btn-add" id="btnSalvarSite" style="margin-top: 20px;" onclick="salvarConfiguracoesSite()">💾 Salvar Dados e Fotos no Navegador</button>
+        <button class="btn-add" id="btnSalvarSite" style="margin-top: 20px;" onclick="salvarConfiguracoesSite()">💾 Salvar Dados e Cores no Navegador</button>
       </div>
     </div>
 
@@ -545,6 +562,8 @@
 
   function carregarConfiguracoesSite() {
     const configSite = JSON.parse(localStorage.getItem('configSite')) || {};
+    document.getElementById('configCorPrincipal').value = configSite.corPrincipal || '#8e3a59';
+    document.getElementById('configCorFundo').value = configSite.corFundo || '#fdfaf9';
     document.getElementById('configWhats').value = configSite.whats || '';
     document.getElementById('configHorarioTxt').value = configSite.horarioTxt || '';
     document.getElementById('configEndereco').value = configSite.endereco || '';
@@ -562,6 +581,8 @@
 
   function salvarConfiguracoesSite() {
     const configSite = {
+      corPrincipal: document.getElementById('configCorPrincipal').value,
+      corFundo: document.getElementById('configCorFundo').value,
       whats: document.getElementById('configWhats').value.trim(),
       horarioTxt: document.getElementById('configHorarioTxt').value.trim(),
       endereco: document.getElementById('configEndereco').value.trim(),
@@ -572,7 +593,7 @@
     };
 
     localStorage.setItem('configSite', JSON.stringify(configSite));
-    alert('✅ Configurações e fotos salvas com sucesso no navegador!');
+    alert('✅ Configurações e cores salvas com sucesso!');
   }
 
   function salvarNovaSenha() {
