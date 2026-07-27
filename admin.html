@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel do Salão - Gestão Local</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: #fdfaf9; color: #333333; padding: 20px; display: flex; justify-content: center; }
+    .container { max-width: 650px; width: 100%; background: #ffffff; padding: 25px; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.05); border: 1px solid #f7edee; }
+    h1, h2 { text-align: center; margin-bottom: 20px; color: #8e3a59; }
+    label { display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 0.9rem; }
+    input[type="text"], input[type="email"], input[type="password"], input[type="number"], select { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #e0ccd2; background: #ffffff; color: #333; margin-bottom: 12px; font-size: 0.95rem; }
+    
+    .nav-tabs { display: flex; gap: 6px; margin-bottom: 20px; border-bottom: 1px solid #f0e4e8; padding-bottom: 10px; overflow-x: auto; }
+    .tab-btn { flex: 1; min-width: 80px; padding: 10px 5px; background: #fdf8f9; border: 1px solid #e0ccd2; color: #666; border-radius: 8px; cursor: pointer; font-weight: bold; text-align: center; font-size: 0.8rem; transition: 0.2s; white-space: nowrap; }
+    .tab-btn.active { background: #8e3a59; color: #ffffff; border-color: #8e3a59; }
+
+    button { cursor: pointer; transition: 0.2s; font-weight: bold; width: 100%; padding: 10px; border-radius: 8px; border: none; font-size: 0.95rem; }
+    .btn-primary { background: #8e3a59; color: #ffffff; }
+    .btn-danger { background: #dc2626; color: #fff; width: auto; padding: 6px 12px; font-size: 0.85rem; }
+    .btn-add { background: #15803d; color: #fff; margin-top: 5px; }
+
+    .btn-order { background: #f5f5f5; color: #8e3a59; border: 1px solid #ddd; padding: 6px 10px; border-radius: 4px; font-size: 0.85rem; width: auto; }
+    
+    .admin-card { background: #fdf8f9; border: 1px dashed #8e3a59; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+    .item-row { display: flex; gap: 8px; align-items: center; background: #ffffff; border: 1px solid #f0e4e8; padding: 10px 12px; border-radius: 8px; margin-bottom: 10px; }
+    .item-row img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 1px solid #8e3a59; }
+    
+    .agenda-card { background: #fdf8f9; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #8e3a59; border-top: 1px solid #f2e2e6; border-right: 1px solid #f2e2e6; border-bottom: 1px solid #f2e2e6; position: relative; }
+    .agenda-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: bold; color: #8e3a59; padding-right: 25px; }
+    .btn-delete-x { position: absolute; top: 12px; right: 12px; background: transparent; color: #dc2626; border: none; font-size: 1.1rem; cursor: pointer; padding: 2px 6px; border-radius: 4px; line-height: 1; }
+
+    .checkbox-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; }
+    .checkbox-item { background: #fdf8f9; border: 1px solid #f0e4e8; padding: 10px; border-radius: 8px; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
+    .checkbox-item input { width: auto; margin: 0; }
+
+    .file-input-wrapper { margin-bottom: 15px; }
+    input[type="file"] { display: none; }
+    .custom-file-btn { display: inline-block; padding: 10px 15px; background: #f5f5f5; border: 1px solid #ccc; color: #555; border-radius: 8px; cursor: pointer; font-size: 0.85rem; width: 100%; text-align: center; }
+
+    #loginSection, #adminPanel { display: none; }
+    .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .logout-link { color: #dc2626; font-size: 0.9rem; cursor: pointer; }
+    
+    .barber-selector-bar { background: #fdf8f9; padding: 12px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #f2e2e6; }
+
+    .gallery-upload-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 10px; }
+    .gallery-upload-card { background: #fff; border: 1px solid #f0e4e8; padding: 10px; border-radius: 8px; text-align: center; }
+    .gallery-upload-card img { width: 100%; height: 90px; object-fit: cover; border-radius: 6px; margin-bottom: 8px; border: 1px solid #ddd; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  
+  <div id="loginSection" style="display: block;">
+    <h1>Portal da Profissional</h1>
+    <form onsubmit="realizarLogin(event)">
+      <label>Usuário:</label>
+      <input type="text" id="loginUser" placeholder="admin" required>
+      <label>Senha:</label>
+      <input type="password" id="loginPass" placeholder="••••••••" required>
+      <button type="submit" class="btn-primary" id="btnSubmitLogin">Entrar no Painel</button>
+    </form>
+  </div>
+
+  <div id="adminPanel">
+    <div class="header-actions">
+      <h2>⚙️ Gestão do Salão</h2>
+      <span class="logout-link" onclick="logout()">Sair</span>
+    </div>
+
+    <div class="barber-selector-bar">
+      <label for="barbeiroAtivoSelect">Você está gerenciando a agenda de:</label>
+      <select id="barbeiroAtivoSelect" onchange="trocarBarbeiroAtivo(this.value)" style="margin-bottom:0;">
+      </select>
+    </div>
+
+    <div class="nav-tabs">
+      <div class="tab-btn active" onclick="trocarAba('agendaTab', this)">📅 Agenda</div>
+      <div class="tab-btn" onclick="trocarAba('diasTab', this)">🗓️ Dias</div>
+      <div class="tab-btn" onclick="trocarAba('horariosTab', this)">⏰ Horários</div>
+      <div class="tab-btn" onclick="trocarAba('servicosTab', this)">✂️ Serviços</div>
+      <div class="tab-btn" onclick="trocarAba('perfilTab', this)">👤 Equipe</div>
+      <div class="tab-btn" onclick="trocarAba('siteTab', this)">⚙️ Site</div>
+      <div class="tab-btn" onclick="trocarAba('senhaTab', this)">🔑 Senha</div>
+    </div>
+
+    <div id="agendaTab" class="tab-content">
+      <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+        <div style="flex: 1;">
+          <label>Filtro de Agendamentos:</label>
+          <select id="filtroAgenda" onchange="renderizarAgenda()">
+            <option value="hoje">📌 Agendamentos de Hoje</option>
+            <option value="semana">📅 Próximos 7 Dias</option>
+            <option value="todos">📋 Todos os Agendamentos</option>
+          </select>
+        </div>
+      </div>
+      <div id="listaAgendamentos"></div>
+    </div>
+
+    <div id="diasTab" class="tab-content" style="display: none;">
+      <label>Selecione os dias de atendimento:</label>
+      <div class="checkbox-grid">
+        <div class="checkbox-item"><input type="checkbox" id="dia_1" value="1" onchange="salvarDiasAtendimento()"> Segunda-feira</div>
+        <div class="checkbox-item"><input type="checkbox" id="dia_2" value="2" onchange="salvarDiasAtendimento()"> Terça-feira</div>
+        <div class="checkbox-item"><input type="checkbox" id="dia_3" value="3" onchange="salvarDiasAtendimento()"> Quarta-feira</div>
+        <div class="checkbox-item"><input type="checkbox" id="dia_4" value="4" onchange="salvarDiasAtendimento()"> Quinta-feira</div>
+        <div class="checkbox-item"><input type="checkbox" id="dia_5" value="5" onchange="salvarDiasAtendimento()"> Sexta-feira</div>
+        <div class="checkbox-item"><input type="checkbox" id="dia_6" value="6" onchange="salvarDiasAtendimento()"> Sábado</div>
+        <div class="checkbox-item"><input type="checkbox" id="dia_0" value="0" onchange="salvarDiasAtendimento()"> Domingo</div>
+      </div>
+    </div>
+
+    <div id="horariosTab" class="tab-content" style="display: none;">
+      <label>Selecione os horários disponíveis para agendamento:</label>
+      <div class="checkbox-grid" id="gridHorariosConfig"></div>
+    </div>
+
+    <div id="servicosTab" class="tab-content" style="display: none;">
+      <div class="admin-card">
+        <label>Cadastrar Serviço para esta Profissional:</label>
+        <input type="text" id="novoServicoNome" placeholder="Ex: Escova, Mechas, Designer de Sobrancelhas">
+        <input type="number" id="novoServicoPreco" placeholder="Ex: 80.00" step="0.01">
+        <button class="btn-add" onclick="adicionarServico()">+ Adicionar Serviço</button>
+      </div>
+      <label>Catálogo de Serviços desta Profissional:</label>
+      <div id="listaServicos"></div>
+    </div>
+
+    <div id="perfilTab" class="tab-content" style="display: none;">
+      <div class="admin-card">
+        <label>Cadastrar Nova Profissional:</label>
+        <input type="text" id="newNome" placeholder="Nome da Profissional">
+        <div class="file-input-wrapper">
+          <label class="custom-file-btn" for="newFotoFile">📷 Selecionar Foto</label>
+          <input type="file" id="newFotoFile" accept="image/*" onchange="atualizarNomeArquivo(this)">
+          <span id="fileNameDisplay" style="font-size: 0.8rem; color: #888; display: block; margin-top: 5px;">Nenhum arquivo selecionado</span>
+        </div>
+        <button class="btn-add" onclick="adicionarBarbeiro()">+ Cadastrar Profissional</button>
+      </div>
+      <label>Profissionais Cadastradas:</label>
+      <div id="adminList"></div>
+    </div>
+
+    <div id="siteTab" class="tab-content" style="display: none;">
+      <div class="admin-card">
+        <label>📱 WhatsApp para Contato (com DDD, apenas números):</label>
+        <input type="text" id="configWhats" placeholder="Ex: 5513999999999">
+
+        <label>🕒 Texto do Horário de Atendimento:</label>
+        <input type="text" id="configHorarioTxt" placeholder="Ex: TER - SÁB | 08H - 19H">
+
+        <label>📍 Endereço Completo:</label>
+        <input type="text" id="configEndereco" placeholder="Ex: Rua Santo Antônio, 622 - Praia Grande/SP">
+
+        <label style="margin-top: 15px; color: #8e3a59;">📸 Galeria de Fotos:</label>
+        
+        <div class="gallery-upload-grid">
+          <div class="gallery-upload-card">
+            <img id="previewGaleria1" src="https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400" alt="Foto 1">
+            <label class="custom-file-btn" for="galeriaFile1">📷 Escolher Foto 1</label>
+            <input type="file" id="galeriaFile1" accept="image/*" onchange="carregarFotoGaleria(this, 1)">
+          </div>
+
+          <div class="gallery-upload-card">
+            <img id="previewGaleria2" src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400" alt="Foto 2">
+            <label class="custom-file-btn" for="galeriaFile2">📷 Escolher Foto 2</label>
+            <input type="file" id="galeriaFile2" accept="image/*" onchange="carregarFotoGaleria(this, 2)">
+          </div>
+
+          <div class="gallery-upload-card">
+            <img id="previewGaleria3" src="https://images.unsplash.com/photo-1562322140-8baeececf3df?w=400" alt="Foto 3">
+            <label class="custom-file-btn" for="galeriaFile3">📷 Escolher Foto 3</label>
+            <input type="file" id="galeriaFile3" accept="image/*" onchange="carregarFotoGaleria(this, 3)">
+          </div>
+
+          <div class="gallery-upload-card">
+            <img id="previewGaleria4" src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400" alt="Foto 4">
+            <label class="custom-file-btn" for="galeriaFile4">📷 Escolher Foto 4</label>
+            <input type="file" id="galeriaFile4" accept="image/*" onchange="carregarFotoGaleria(this, 4)">
+          </div>
+        </div>
+
+        <button class="btn-add" id="btnSalvarSite" style="margin-top: 20px;" onclick="salvarConfiguracoesSite()">💾 Salvar Dados e Fotos no Navegador</button>
+      </div>
+    </div>
+
+    <div id="senhaTab" class="tab-content" style="display: none;">
+      <div class="admin-card">
+        <label>🔒 Nova Senha de Acesso:</label>
+        <input type="password" id="novaSenhaInput" placeholder="Mínimo 4 caracteres">
+        <button class="btn-add" onclick="salvarNovaSenha()">🔑 Atualizar Senha de Acesso</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const fotoPadrao = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150';
+  const todosHorariosPadrao = ['08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00'];
+
+  let barbeiroAtivoId = 1;
+  let fotosGaleriaMemoria = { foto1: '', foto2: '', foto3: '', foto4: '' };
+
+  function getBarbeiros() { return JSON.parse(localStorage.getItem('barbeiros')) || [{ id: 1, nome: 'Mariana Costa', foto: fotoPadrao }]; }
+  function saveItem(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
+
+  function getServicosDoBarbeiro(barbeiroId) {
+    const configServicos = JSON.parse(localStorage.getItem('servicosPorBarbeiro')) || {};
+    return configServicos[barbeiroId] || [
+      { id: 1, nome: 'Escova & Modelagem', preco: 60.00 },
+      { id: 2, nome: 'Manicure Completa', preco: 35.00 }
+    ];
+  }
+
+  function saveServicosDoBarbeiro(barbeiroId, list) {
+    const configServicos = JSON.parse(localStorage.getItem('servicosPorBarbeiro')) || {};
+    configServicos[barbeiroId] = list;
+    saveItem('servicosPorBarbeiro', configServicos);
+    renderizarServicos();
+  }
+
+  function carregarSeletorBarbeiros() {
+    const list = getBarbeiros();
+    const select = document.getElementById('barbeiroAtivoSelect');
+    select.innerHTML = '';
+    
+    list.forEach(b => {
+      const opt = document.createElement('option');
+      opt.value = b.id;
+      opt.innerText = b.nome;
+      select.appendChild(opt);
+    });
+
+    if (!list.some(b => b.id == barbeiroAtivoId) && list.length > 0) {
+      barbeiroAtivoId = list[0].id;
+    }
+    select.value = barbeiroAtivoId;
+  }
+
+  function trocarBarbeiroAtivo(id) {
+    barbeiroAtivoId = id;
+    renderizarAbaAtual();
+  }
+
+  function trocarAba(abaId, element) {
+    document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById(abaId).style.display = 'block';
+    element.classList.add('active');
+    renderizarAbaAtual();
+  }
+
+  function renderizarAbaAtual() {
+    const btnAtivo = document.querySelector('.tab-btn.active');
+    if (!btnAtivo) return;
+    const abaAtiva = btnAtivo.getAttribute('onclick');
+    if (abaAtiva.includes('agendaTab')) renderizarAgenda();
+    if (abaAtiva.includes('diasTab')) carregarDiasAtendimento();
+    if (abaAtiva.includes('horariosTab')) renderizarHorariosConfig();
+    if (abaAtiva.includes('servicosTab')) renderizarServicos();
+    if (abaAtiva.includes('perfilTab')) renderizarBarbeiros();
+    if (abaAtiva.includes('siteTab')) carregarConfiguracoesSite();
+  }
+
+  function renderizarAgenda() {
+    const container = document.getElementById('listaAgendamentos');
+    const agendamentos = JSON.parse(localStorage.getItem('agendamentos')) || [];
+    const barbeiros = getBarbeiros();
+    const barbeiroAtual = barbeiros.find(b => b.id == barbeiroAtivoId);
+    container.innerHTML = '';
+
+    const filtro = document.getElementById('filtroAgenda').value;
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+
+    const filtrados = agendamentos.filter(a => {
+      if (barbeiroAtual && a.barbeiro !== barbeiroAtual.nome) return false;
+
+      const partesData = a.data.split('-');
+      const dataItem = new Date(partesData[0], partesData[1] - 1, partesData[2]);
+      dataItem.setHours(0, 0, 0, 0);
+
+      if (filtro === 'hoje') return dataItem.getTime() === hoje.getTime();
+      if (filtro === 'semana') {
+        const proximos7Dias = new Date(hoje);
+        proximos7Dias.setDate(hoje.getDate() + 7);
+        return dataItem >= hoje && dataItem <= proximos7Dias;
+      }
+      return true;
+    });
+
+    if (filtrados.length === 0) {
+      container.innerHTML = '<p style="color:#888; text-align:center; padding: 20px;">Nenhum agendamento encontrado.</p>';
+      return;
+    }
+
+    filtrados.sort((a, b) => new Date(a.data + 'T' + a.hora) - new Date(b.data + 'T' + b.hora));
+
+    filtrados.forEach(a => {
+      const card = document.createElement('div');
+      card.className = 'agenda-card';
+      const dataFormatada = a.data.split('-').reverse().join('/');
+      
+      let whatsNum = (a.whats || '').replace(/\D/g, '');
+      if (whatsNum && !whatsNum.startsWith('55') && whatsNum.length <= 11) {
+        whatsNum = '55' + whatsNum;
+      }
+
+      const linkWhats = whatsNum 
+        ? `<a href="https://api.whatsapp.com/send?phone=${whatsNum}&text=Ol%C3%A1%20${encodeURIComponent(a.cliente)}%2C%20tudo%20bem%3F%20Falo%20do%20Studio%20de%20Beleza." target="_blank" style="color: #25d366; font-weight: bold; text-decoration: none;">💬 Falar no WhatsApp (${a.whats})</a>`
+        : '<span style="color:#888;">Não informado</span>';
+
+      card.innerHTML = `
+        <button class="btn-delete-x" onclick="excluirAgendamento('${a.id}')" title="Excluir Agendamento">✖</button>
+        <div class="agenda-header">
+          <span>🕒 ${a.hora} hs — ${dataFormatada}</span>
+          <span>💅 ${a.barbeiro}</span>
+        </div>
+        <div><b>Cliente:</b> ${a.cliente}</div>
+        <div><b>Serviço:</b> ${a.servico}</div>
+        <div style="font-size:0.9rem; margin-top:8px;">📱 Whats: ${linkWhats}</div>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  function excluirAgendamento(id) {
+    if (confirm('Deseja excluir este agendamento?')) {
+      let agendamentos = JSON.parse(localStorage.getItem('agendamentos')) || [];
+      agendamentos = agendamentos.filter(a => a.id != id);
+      localStorage.setItem('agendamentos', JSON.stringify(agendamentos));
+      renderizarAgenda();
+    }
+  }
+
+  function carregarDiasAtendimento() {
+    const configDias = JSON.parse(localStorage.getItem('diasAtendimentoPorBarbeiro')) || {};
+    const diasBarbeiro = configDias[barbeiroAtivoId] || [1, 2, 3, 4, 5, 6];
+
+    for (let i = 0; i <= 6; i++) {
+      const chk = document.getElementById(`dia_${i}`);
+      if (chk) chk.checked = diasBarbeiro.includes(i);
+    }
+  }
+
+  function salvarDiasAtendimento() {
+    const configDias = JSON.parse(localStorage.getItem('diasAtendimentoPorBarbeiro')) || {};
+    const selecionados = [];
+    for (let i = 0; i <= 6; i++) {
+      const chk = document.getElementById(`dia_${i}`);
+      if (chk && chk.checked) selecionados.push(i);
+    }
+    configDias[barbeiroAtivoId] = selecionados;
+    saveItem('diasAtendimentoPorBarbeiro', configDias);
+  }
+
+  function renderizarHorariosConfig() {
+    const configHorarios = JSON.parse(localStorage.getItem('horariosPorBarbeiro')) || {};
+    const horariosLiberados = configHorarios[barbeiroAtivoId] || todosHorariosPadrao;
+    const container = document.getElementById('gridHorariosConfig');
+    container.innerHTML = '';
+
+    todosHorariosPadrao.forEach(h => {
+      const isChecked = horariosLiberados.includes(h);
+      const item = document.createElement('div');
+      item.className = 'checkbox-item';
+      item.innerHTML = `
+        <input type="checkbox" value="${h}" ${isChecked ? 'checked' : ''} onchange="salvarHorariosAtendimento()">
+        ${h} hs
+      `;
+      container.appendChild(item);
+    });
+  }
+
+  function salvarHorariosAtendimento() {
+    const configHorarios = JSON.parse(localStorage.getItem('horariosPorBarbeiro')) || {};
+    const selecionados = [];
+    document.querySelectorAll('#gridHorariosConfig input[type="checkbox"]').forEach(chk => {
+      if (chk.checked) selecionados.push(chk.value);
+    });
+    configHorarios[barbeiroAtivoId] = selecionados;
+    saveItem('horariosPorBarbeiro', configHorarios);
+  }
+
+  function renderizarServicos() {
+    const list = getServicosDoBarbeiro(barbeiroAtivoId);
+    const container = document.getElementById('listaServicos');
+    container.innerHTML = '';
+
+    if (list.length === 0) {
+      container.innerHTML = '<p style="color:#888; text-align:center; padding:10px;">Nenhum serviço cadastrado para esta profissional.</p>';
+      return;
+    }
+
+    list.forEach((s, index) => {
+      const row = document.createElement('div');
+      row.className = 'item-row';
+      row.innerHTML = `
+        <button class="btn-order" onclick="moverServico(${index}, -1)" ${index === 0 ? 'disabled style="opacity:0.3;"' : ''}>⬆️</button>
+        <button class="btn-order" onclick="moverServico(${index}, 1)" ${index === list.length - 1 ? 'disabled style="opacity:0.3;"' : ''}>⬇️</button>
+        <input type="text" value="${s.nome}" onchange="atualizarServico(${s.id}, 'nome', this.value)" style="flex:2; margin:0;">
+        <input type="number" value="${parseFloat(s.preco).toFixed(2)}" step="0.01" onchange="atualizarServico(${s.id}, 'preco', parseFloat(this.value))" style="flex:1; margin:0;">
+        <button class="btn-danger" onclick="removerServico(${s.id})">✖</button>
+      `;
+      container.appendChild(row);
+    });
+  }
+
+  function moverServico(index, direcao) {
+    const list = getServicosDoBarbeiro(barbeiroAtivoId);
+    const novoIndex = index + direcao;
+    if (novoIndex < 0 || novoIndex >= list.length) return;
+    const temp = list[index];
+    list[index] = list[novoIndex];
+    list[novoIndex] = temp;
+    saveServicosDoBarbeiro(barbeiroAtivoId, list);
+  }
+
+  function adicionarServico() {
+    const nome = document.getElementById('novoServicoNome').value;
+    const preco = parseFloat(document.getElementById('novoServicoPreco').value);
+    if (!nome || isNaN(preco)) return alert('Informe o nome e o preço!');
+    
+    const list = getServicosDoBarbeiro(barbeiroAtivoId);
+    list.push({ id: Date.now(), nome, preco });
+    saveServicosDoBarbeiro(barbeiroAtivoId, list);
+    
+    document.getElementById('novoServicoNome').value = '';
+    document.getElementById('novoServicoPreco').value = '';
+  }
+
+  function atualizarServico(id, campo, valor) {
+    const list = getServicosDoBarbeiro(barbeiroAtivoId);
+    const item = list.find(s => s.id === id);
+    if (item) {
+      item[campo] = valor;
+      saveServicosDoBarbeiro(barbeiroAtivoId, list);
+    }
+  }
+
+  function removerServico(id) {
+    const list = getServicosDoBarbeiro(barbeiroAtivoId).filter(s => s.id !== id);
+    saveServicosDoBarbeiro(barbeiroAtivoId, list);
+  }
+
+  function atualizarNomeArquivo(input) {
+    document.getElementById('fileNameDisplay').innerText = input.files[0] ? input.files[0].name : 'Nenhum arquivo selecionado';
+  }
+
+  function converterBase64(file) {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function adicionarBarbeiro() {
+    const nome = document.getElementById('newNome').value;
+    const fileInput = document.getElementById('newFotoFile');
+    if (!nome) return alert('Digite o nome da profissional!');
+
+    let fotoStr = fotoPadrao;
+    if (fileInput.files.length > 0) {
+      fotoStr = await converterBase64(fileInput.files[0]);
+    }
+
+    const barbeiros = getBarbeiros();
+    barbeiros.push({ id: Date.now(), nome, foto: fotoStr });
+    saveItem('barbeiros', barbeiros);
+
+    alert('Profissional cadastrada com sucesso!');
+    document.getElementById('newNome').value = '';
+    fileInput.value = '';
+    document.getElementById('fileNameDisplay').innerText = 'Nenhum arquivo selecionado';
+    carregarSeletorBarbeiros();
+    renderizarBarbeiros();
+  }
+
+  async function alterarFotoExistente(id, fileInput) {
+    if (fileInput.files.length === 0) return;
+    const novaFoto = await converterBase64(fileInput.files[0]);
+    const barbeiros = getBarbeiros();
+    const b = barbeiros.find(x => x.id == id);
+    if (b) {
+      b.foto = novaFoto;
+      saveItem('barbeiros', barbeiros);
+      alert('Foto atualizada com sucesso!');
+      renderizarBarbeiros();
+    }
+  }
+
+  function atualizarBarbeiro(id, nome) {
+    if (!nome.trim()) return;
+    const barbeiros = getBarbeiros();
+    const b = barbeiros.find(x => x.id == id);
+    if (b) {
+      b.nome = nome.trim();
+      saveItem('barbeiros', barbeiros);
+      carregarSeletorBarbeiros();
+    }
+  }
+
+  function removerBarbeiro(id) {
+    if (!confirm('Tem certeza que deseja remover esta profissional?')) return;
+    let barbeiros = getBarbeiros();
+    barbeiros = barbeiros.filter(b => b.id != id);
+    saveItem('barbeiros', barbeiros);
+    alert('Profissional removida!');
+    carregarSeletorBarbeiros();
+    renderizarBarbeiros();
+  }
+
+  function renderizarBarbeiros() {
+    const list = getBarbeiros();
+    const container = document.getElementById('adminList');
+    container.innerHTML = '';
+    
+    list.forEach(b => {
+      const row = document.createElement('div');
+      row.className = 'item-row';
+      row.innerHTML = `
+        <img src="${b.foto || fotoPadrao}" alt="${b.nome}">
+        <input type="text" value="${b.nome}" onchange="atualizarBarbeiro('${b.id}', this.value)" style="flex:1; margin:0;">
+        <label class="custom-file-btn" for="file_${b.id}" style="width:auto; padding:6px 10px; margin:0;">Foto</label>
+        <input type="file" id="file_${b.id}" accept="image/*" onchange="alterarFotoExistente('${b.id}', this)">
+        <button class="btn-danger" onclick="removerBarbeiro('${b.id}')">✖</button>
+      `;
+      container.appendChild(row);
+    });
+  }
+
+  async function carregarFotoGaleria(input, num) {
+    if (input.files && input.files[0]) {
+      const base64 = await converterBase64(input.files[0]);
+      fotosGaleriaMemoria[`foto${num}`] = base64;
+      document.getElementById(`previewGaleria${num}`).src = base64;
+    }
+  }
+
+  function carregarConfiguracoesSite() {
+    const configSite = JSON.parse(localStorage.getItem('configSite')) || {};
+    document.getElementById('configWhats').value = configSite.whats || '';
+    document.getElementById('configHorarioTxt').value = configSite.horarioTxt || '';
+    document.getElementById('configEndereco').value = configSite.endereco || '';
+
+    fotosGaleriaMemoria.foto1 = configSite.foto1 || '';
+    fotosGaleriaMemoria.foto2 = configSite.foto2 || '';
+    fotosGaleriaMemoria.foto3 = configSite.foto3 || '';
+    fotosGaleriaMemoria.foto4 = configSite.foto4 || '';
+
+    if (configSite.foto1) document.getElementById('previewGaleria1').src = configSite.foto1;
+    if (configSite.foto2) document.getElementById('previewGaleria2').src = configSite.foto2;
+    if (configSite.foto3) document.getElementById('previewGaleria3').src = configSite.foto3;
+    if (configSite.foto4) document.getElementById('previewGaleria4').src = configSite.foto4;
+  }
+
+  function salvarConfiguracoesSite() {
+    const configSite = {
+      whats: document.getElementById('configWhats').value.trim(),
+      horarioTxt: document.getElementById('configHorarioTxt').value.trim(),
+      endereco: document.getElementById('configEndereco').value.trim(),
+      foto1: fotosGaleriaMemoria.foto1,
+      foto2: fotosGaleriaMemoria.foto2,
+      foto3: fotosGaleriaMemoria.foto3,
+      foto4: fotosGaleriaMemoria.foto4
+    };
+
+    localStorage.setItem('configSite', JSON.stringify(configSite));
+    alert('✅ Configurações e fotos salvas com sucesso no navegador!');
+  }
+
+  function salvarNovaSenha() {
+    const novaSenha = document.getElementById('novaSenhaInput').value;
+    if (!novaSenha || novaSenha.length < 4) {
+      return alert('A senha deve ter no mínimo 4 caracteres.');
+    }
+    localStorage.setItem('adminSenha', novaSenha.trim());
+    alert('🔑 Senha alterada com sucesso!');
+    document.getElementById('novaSenhaInput').value = '';
+  }
+
+  function realizarLogin(e) {
+    e.preventDefault();
+    const usuario = document.getElementById('loginUser').value.trim();
+    const senha = document.getElementById('loginPass').value.trim();
+    const senhaSalva = localStorage.getItem('adminSenha') || '1234';
+
+    if (usuario === 'admin' && senha === senhaSalva) {
+      sessionStorage.setItem('autenticado', 'true');
+      mostrarPainel();
+    } else {
+      alert('Usuário ou senha incorretos! (Senha padrão: 1234)');
+    }
+  }
+
+  function logout() {
+    sessionStorage.removeItem('autenticado');
+    document.getElementById('loginSection').style.display = 'block';
+    document.getElementById('adminPanel').style.display = 'none';
+  }
+
+  function mostrarPainel() {
+    document.getElementById('loginSection').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'block';
+    carregarSeletorBarbeiros();
+    renderizarAbaAtual();
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    if (sessionStorage.getItem('autenticado') === 'true') {
+      mostrarPainel();
+    }
+  });
+</script>
+
+</body>
+</html>
