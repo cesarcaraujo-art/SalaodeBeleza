@@ -6,7 +6,6 @@
   <title>Agendamento - Studio & Salão de Beleza</title>
   
   <style>
-    /* VARIÁVEIS DE COR PADRÃO */
     :root {
       --primary-color: #8e3a59;
       --bg-color: #fdfaf9;
@@ -204,7 +203,6 @@
   function aplicarConfiguracoesSite() {
     const configSite = JSON.parse(localStorage.getItem('configSite')) || {};
 
-    // APLICAÇÃO DINÂMICA DE CORES
     if (configSite.corPrincipal) {
       document.documentElement.style.setProperty('--primary-color', configSite.corPrincipal);
     }
