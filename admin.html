@@ -7,7 +7,7 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body { background-color: #fdfaf9; color: #333333; padding: 20px; display: flex; justify-content: center; }
-    .container { max-width: 750px; width: 100%; background: #ffffff; padding: 25px; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.05); border: 1px solid #f7edee; }
+    .container { max-width: 800px; width: 100%; background: #ffffff; padding: 25px; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.05); border: 1px solid #f7edee; }
     h1, h2 { text-align: center; margin-bottom: 20px; color: #8e3a59; }
     label { display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 0.9rem; }
     input[type="text"], input[type="email"], input[type="password"], input[type="number"], select { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #e0ccd2; background: #ffffff; color: #333; margin-bottom: 12px; font-size: 0.95rem; }
@@ -42,11 +42,11 @@
     .color-picker-item { flex: 1; }
     .color-picker-item input[type="color"] { width: 100%; height: 40px; border-radius: 8px; border: 1px solid #e0ccd2; cursor: pointer; padding: 2px; background: #fff; }
 
-    /* ESTILOS DE FATURAMENTO */
-    .metrics-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
-    .metric-card { background: #fdf8f9; border: 1px solid #f0e4e8; padding: 15px; border-radius: 10px; text-align: center; }
-    .metric-card h3 { font-size: 0.9rem; color: #666; margin-bottom: 5px; }
-    .metric-card p { font-size: 1.4rem; font-weight: bold; color: #8e3a59; }
+    /* ESTILOS DE FATURAMENTO COM COMISSÃO */
+    .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+    .metric-card { background: #fdf8f9; border: 1px solid #f0e4e8; padding: 12px; border-radius: 10px; text-align: center; }
+    .metric-card h3 { font-size: 0.8rem; color: #666; margin-bottom: 5px; }
+    .metric-card p { font-size: 1.2rem; font-weight: bold; color: #8e3a59; }
 
     #loginSection, #adminPanel { display: none; }
     .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
@@ -130,15 +130,18 @@
       <div class="checkbox-grid" id="gridHorariosConfig"></div>
     </div>
 
-    <!-- SERVIÇOS -->
+    <!-- SERVIÇOS E COMISSÃO DA PROFISSIONAL -->
     <div id="servicosTab" class="tab-content" style="display: none;">
       <div class="admin-card">
         <label>Cadastrar Serviço para esta Profissional:</label>
         <input type="text" id="novoServicoNome" placeholder="Ex: Escova, Mechas, Designer de Sobrancelhas">
-        <input type="number" id="novoServicoPreco" placeholder="Ex: 80.00" step="0.01">
+        <div style="display:flex; gap:10px;">
+          <input type="number" id="novoServicoPreco" placeholder="Preço (R$)" step="0.01">
+          <input type="number" id="novoServicoPct" placeholder="% da Profissional (Ex: 40)" min="0" max="100">
+        </div>
         <button class="btn-add" onclick="adicionarServico()">+ Adicionar Serviço</button>
       </div>
-      <label>Catálogo de Serviços desta Profissional:</label>
+      <label>Catálogo de Serviços e Comissões desta Profissional:</label>
       <div id="listaServicos"></div>
     </div>
 
@@ -167,13 +170,18 @@
       <div id="listaProdutos"></div>
     </div>
 
-    <!-- FATURAMENTO -->
+    <!-- FATURAMENTO DIVIDIDO COM COMISSÃO DA PROFISSIONAL E DONO -->
     <div id="faturamentoTab" class="tab-content" style="display: none;">
       <div class="admin-card">
-        <label>📅 Filtro de Período:</label>
+        <label>👤 Filtrar por Profissional:</label>
+        <select id="selectBarbeiroFat" onchange="renderizarFaturamento()">
+          <option value="todos">✨ Visão Geral do Salão (Todos)</option>
+        </select>
+
+        <label style="margin-top:10px;">📅 Período:</label>
         <div style="display: flex; gap: 10px;">
           <div style="flex: 1;">
-            <label style="font-size: 0.8rem; font-weight: normal;">Selecione o Mês:</label>
+            <label style="font-size: 0.8rem; font-weight: normal;">Mês:</label>
             <select id="selectMesFat" onchange="renderizarFaturamento()">
               <option value="0">Janeiro</option>
               <option value="1">Fevereiro</option>
@@ -190,14 +198,14 @@
             </select>
           </div>
           <div style="flex: 1;">
-            <label style="font-size: 0.8rem; font-weight: normal;">Selecione a Semana:</label>
+            <label style="font-size: 0.8rem; font-weight: normal;">Semana:</label>
             <select id="selectSemanaFat" onchange="renderizarFaturamento()">
               <option value="todas">Todas as Semanas</option>
-              <option value="1">1ª Semana (Dias 01 a 07)</option>
-              <option value="2">2ª Semana (Dias 08 a 14)</option>
-              <option value="3">3ª Semana (Dias 15 a 21)</option>
-              <option value="4">4ª Semana (Dias 22 a 28)</option>
-              <option value="5">5ª Semana (Dias 29 em diante)</option>
+              <option value="1">1ª Semana (01 a 07)</option>
+              <option value="2">2ª Semana (08 a 14)</option>
+              <option value="3">3ª Semana (15 a 21)</option>
+              <option value="4">4ª Semana (22 a 28)</option>
+              <option value="5">5ª Semana (29 em diante)</option>
             </select>
           </div>
         </div>
@@ -205,15 +213,19 @@
 
       <div class="metrics-grid">
         <div class="metric-card">
-          <h3>Faturamento no Período</h3>
-          <p id="fatFiltrado">R$ 0,00</p>
+          <h3>Total Bruto</h3>
+          <p id="fatTotalBruto">R$ 0,00</p>
         </div>
         <div class="metric-card">
-          <h3>Faturamento do Mês Inteiro</h3>
-          <p id="fatMensalTotal">R$ 0,00</p>
+          <h3>Comissão Profissional</h3>
+          <p id="fatComissaoProf" style="color: #15803d;">R$ 0,00</p>
+        </div>
+        <div class="metric-card">
+          <h3>Parte da Casa (Dono)</h3>
+          <p id="fatParteDono" style="color: #8e3a59;">R$ 0,00</p>
         </div>
       </div>
-      <label>Histórico de Entradas (Serviços e Vendas):</label>
+      <label>Detalhamento das Entradas e Divisão:</label>
       <div id="listaHistoricoVendas"></div>
     </div>
 
@@ -314,8 +326,8 @@
   function getServicosDoBarbeiro(barbeiroId) {
     const configServicos = JSON.parse(localStorage.getItem('servicosPorBarbeiro')) || {};
     return configServicos[barbeiroId] || [
-      { id: 1, nome: 'Escova & Modelagem', preco: 60.00 },
-      { id: 2, nome: 'Manicure Completa', preco: 35.00 }
+      { id: 1, nome: 'Escova & Modelagem', preco: 60.00, pctProfissional: 40 },
+      { id: 2, nome: 'Manicure Completa', preco: 35.00, pctProfissional: 50 }
     ];
   }
 
@@ -369,10 +381,23 @@
     if (abaAtiva.includes('faturamentoTab')) {
       const hoje = new Date();
       document.getElementById('selectMesFat').value = hoje.getMonth();
+      carregarSeletorBarbeirosFaturamento();
       renderizarFaturamento();
     }
     if (abaAtiva.includes('perfilTab')) renderizarBarbeiros();
     if (abaAtiva.includes('siteTab')) carregarConfiguracoesSite();
+  }
+
+  function carregarSeletorBarbeirosFaturamento() {
+    const barbeiros = getBarbeiros();
+    const select = document.getElementById('selectBarbeiroFat');
+    select.innerHTML = '<option value="todos">✨ Visão Geral do Salão (Todos)</option>';
+    barbeiros.forEach(b => {
+      const opt = document.createElement('option');
+      opt.value = b.nome;
+      opt.innerText = `💅 ${b.nome}`;
+      select.appendChild(opt);
+    });
   }
 
   function renderizarAgenda() {
@@ -446,7 +471,73 @@
     }
   }
 
-  /* GESTÃO DE PRODUTOS E ESTOQUE */
+  /* GESTÃO DE SERVIÇOS E PORCENTAGEM DA PROFISSIONAL */
+  function renderizarServicos() {
+    const list = getServicosDoBarbeiro(barbeiroAtivoId);
+    const container = document.getElementById('listaServicos');
+    container.innerHTML = '';
+
+    if (list.length === 0) {
+      container.innerHTML = '<p style="color:#888; text-align:center; padding:10px;">Nenhum serviço cadastrado para esta profissional.</p>';
+      return;
+    }
+
+    list.forEach((s, index) => {
+      const pct = s.pctProfissional !== undefined ? s.pctProfissional : 40;
+      const row = document.createElement('div');
+      row.className = 'item-row';
+      row.innerHTML = `
+        <button class="btn-order" onclick="moverServico(${index}, -1)" ${index === 0 ? 'disabled style="opacity:0.3;"' : ''}>⬆️</button>
+        <button class="btn-order" onclick="moverServico(${index}, 1)" ${index === list.length - 1 ? 'disabled style="opacity:0.3;"' : ''}>⬇️</button>
+        <input type="text" value="${s.nome}" onchange="atualizarServico(${s.id}, 'nome', this.value)" style="flex:2; margin:0;">
+        <input type="number" value="${parseFloat(s.preco).toFixed(2)}" step="0.01" onchange="atualizarServico(${s.id}, 'preco', parseFloat(this.value))" style="flex:1; margin:0;" title="Preço R$">
+        <input type="number" value="${pct}" min="0" max="100" onchange="atualizarServico(${s.id}, 'pctProfissional', parseFloat(this.value))" style="flex:1; margin:0;" title="% da Profissional">
+        <button class="btn-danger" onclick="removerServico(${s.id})">✖</button>
+      `;
+      container.appendChild(row);
+    });
+  }
+
+  function moverServico(index, direcao) {
+    const list = getServicosDoBarbeiro(barbeiroAtivoId);
+    const novoIndex = index + direcao;
+    if (novoIndex < 0 || novoIndex >= list.length) return;
+    const temp = list[index];
+    list[index] = list[novoIndex];
+    list[novoIndex] = temp;
+    saveServicosDoBarbeiro(barbeiroAtivoId, list);
+  }
+
+  function adicionarServico() {
+    const nome = document.getElementById('novoServicoNome').value.trim();
+    const preco = parseFloat(document.getElementById('novoServicoPreco').value);
+    const pct = parseFloat(document.getElementById('novoServicoPct').value) || 40;
+    if (!nome || isNaN(preco)) return alert('Informe o nome e o preço!');
+    
+    const list = getServicosDoBarbeiro(barbeiroAtivoId);
+    list.push({ id: Date.now(), nome, preco, pctProfissional: pct });
+    saveServicosDoBarbeiro(barbeiroAtivoId, list);
+    
+    document.getElementById('novoServicoNome').value = '';
+    document.getElementById('novoServicoPreco').value = '';
+    document.getElementById('novoServicoPct').value = '';
+  }
+
+  function atualizarServico(id, campo, valor) {
+    const list = getServicosDoBarbeiro(barbeiroAtivoId);
+    const item = list.find(s => s.id === id);
+    if (item) {
+      item[campo] = valor;
+      saveServicosDoBarbeiro(barbeiroAtivoId, list);
+    }
+  }
+
+  function removerServico(id) {
+    const list = getServicosDoBarbeiro(barbeiroAtivoId).filter(s => s.id !== id);
+    saveServicosDoBarbeiro(barbeiroAtivoId, list);
+  }
+
+  /* PRODUTOS E ESTOQUE */
   function getProdutos() { return JSON.parse(localStorage.getItem('produtos')) || []; }
   
   function adicionarProduto() {
@@ -540,18 +631,20 @@
     renderizarProdutos();
   }
 
-  /* FATURAMENTO PERSONALIZADO POR MÊS E SEMANA */
+  /* FATURAMENTO COM DIVISÃO DE COMISSÃO DA PROFISSIONAL E DONO */
   function renderizarFaturamento() {
     const agendamentos = JSON.parse(localStorage.getItem('agendamentos')) || [];
     const vendasAvulsas = JSON.parse(localStorage.getItem('vendasAvulsas')) || [];
     const container = document.getElementById('listaHistoricoVendas');
     container.innerHTML = '';
 
+    const barbeiroFiltro = document.getElementById('selectBarbeiroFat').value;
     const mesSelecionado = parseInt(document.getElementById('selectMesFat').value);
     const semanaSelecionada = document.getElementById('selectSemanaFat').value;
 
-    let totalFiltrado = 0;
-    let totalMensal = 0;
+    let totalBruto = 0;
+    let totalComissaoProf = 0;
+    let totalParteDono = 0;
 
     const historicoGeral = [];
 
@@ -559,13 +652,41 @@
       const partes = a.data.split('-');
       const d = new Date(partes[0], partes[1] - 1, partes[2]);
       const valor = parseFloat(a.preco || 0);
-      historicoGeral.push({ tipo: 'Serviço', descricao: `${a.servico} (${a.cliente})`, valor, dataObj: d, dataTxt: a.data });
+
+      const pctProf = a.pctProfissional !== undefined ? a.pctProfissional : 40;
+      const valorProf = (valor * pctProf) / 100;
+      const valorDono = valor - valorProf;
+
+      historicoGeral.push({
+        tipo: 'Serviço',
+        descricao: `${a.servico} (${a.cliente})`,
+        barbeiro: a.barbeiro,
+        valor,
+        valorProf,
+        valorDono,
+        pctProf,
+        dataObj: d,
+        dataTxt: a.data
+      });
     });
 
-    vendasAvulsas.forEach(v => {
-      const d = new Date(v.data);
-      historicoGeral.push({ tipo: 'Produto', descricao: v.descricao, valor: parseFloat(v.valor), dataObj: d, dataTxt: d.toISOString().split('T')[0] });
-    });
+    if (barbeiroFiltro === 'todos') {
+      vendasAvulsas.forEach(v => {
+        const d = new Date(v.data);
+        const valor = parseFloat(v.valor);
+        historicoGeral.push({
+          tipo: 'Produto',
+          descricao: v.descricao,
+          barbeiro: 'Salão (Venda)',
+          valor,
+          valorProf: 0,
+          valorDono: valor,
+          pctProf: 0,
+          dataObj: d,
+          dataTxt: d.toISOString().split('T')[0]
+        });
+      });
+    }
 
     historicoGeral.sort((a, b) => b.dataObj - a.dataObj);
 
@@ -573,9 +694,9 @@
       const itemMes = item.dataObj.getMonth();
       const itemDia = item.dataObj.getDate();
 
-      if (itemMes === mesSelecionado) {
-        totalMensal += item.valor;
+      const bateBarbeiro = (barbeiroFiltro === 'todos') || (item.barbeiro === barbeiroFiltro);
 
+      if (bateBarbeiro && itemMes === mesSelecionado) {
         let pertenceSemana = false;
         if (semanaSelecionada === 'todas') {
           pertenceSemana = true;
@@ -592,7 +713,9 @@
         }
 
         if (pertenceSemana) {
-          totalFiltrado += item.valor;
+          totalBruto += item.valor;
+          totalComissaoProf += item.valorProf;
+          totalParteDono += item.valorDono;
 
           const card = document.createElement('div');
           card.className = 'agenda-card';
@@ -602,7 +725,11 @@
               <span>${item.tipo === 'Serviço' ? '✂️' : '📦'} ${item.descricao}</span>
               <span>R$ ${item.valor.toFixed(2).replace('.', ',')}</span>
             </div>
-            <div style="font-size:0.85rem; color:#666;">Data: ${item.dataTxt.split('-').reverse().join('/')}</div>
+            <div style="font-size:0.85rem; color:#555;">
+              <b>Profissional:</b> ${item.barbeiro} | <b>Data:</b> ${item.dataTxt.split('-').reverse().join('/')}<br>
+              <span style="color:#15803d;">💰 Profissional (${item.pctProf}%): R$ ${item.valorProf.toFixed(2).replace('.', ',')}</span> | 
+              <span style="color:#8e3a59;">🏢 Salão/Dono: R$ ${item.valorDono.toFixed(2).replace('.', ',')}</span>
+            </div>
           `;
           container.appendChild(card);
         }
@@ -610,11 +737,12 @@
     });
 
     if (container.children.length === 0) {
-      container.innerHTML = '<p style="color:#888; text-align:center; padding:20px;">Nenhuma entrada registrada para este período.</p>';
+      container.innerHTML = '<p style="color:#888; text-align:center; padding:20px;">Nenhum registro para os filtros selecionados.</p>';
     }
 
-    document.getElementById('fatFiltrado').innerText = `R$ ${totalFiltrado.toFixed(2).replace('.', ',')}`;
-    document.getElementById('fatMensalTotal').innerText = `R$ ${totalMensal.toFixed(2).replace('.', ',')}`;
+    document.getElementById('fatTotalBruto').innerText = `R$ ${totalBruto.toFixed(2).replace('.', ',')}`;
+    document.getElementById('fatComissaoProf').innerText = `R$ ${totalComissaoProf.toFixed(2).replace('.', ',')}`;
+    document.getElementById('fatParteDono').innerText = `R$ ${totalParteDono.toFixed(2).replace('.', ',')}`;
   }
 
   function carregarDiasAtendimento() {
@@ -664,67 +792,6 @@
     });
     configHorarios[barbeiroAtivoId] = selecionados;
     saveItem('horariosPorBarbeiro', configHorarios);
-  }
-
-  function renderizarServicos() {
-    const list = getServicosDoBarbeiro(barbeiroAtivoId);
-    const container = document.getElementById('listaServicos');
-    container.innerHTML = '';
-
-    if (list.length === 0) {
-      container.innerHTML = '<p style="color:#888; text-align:center; padding:10px;">Nenhum serviço cadastrado para esta profissional.</p>';
-      return;
-    }
-
-    list.forEach((s, index) => {
-      const row = document.createElement('div');
-      row.className = 'item-row';
-      row.innerHTML = `
-        <button class="btn-order" onclick="moverServico(${index}, -1)" ${index === 0 ? 'disabled style="opacity:0.3;"' : ''}>⬆️</button>
-        <button class="btn-order" onclick="moverServico(${index}, 1)" ${index === list.length - 1 ? 'disabled style="opacity:0.3;"' : ''}>⬇️</button>
-        <input type="text" value="${s.nome}" onchange="atualizarServico(${s.id}, 'nome', this.value)" style="flex:2; margin:0;">
-        <input type="number" value="${parseFloat(s.preco).toFixed(2)}" step="0.01" onchange="atualizarServico(${s.id}, 'preco', parseFloat(this.value))" style="flex:1; margin:0;">
-        <button class="btn-danger" onclick="removerServico(${s.id})">✖</button>
-      `;
-      container.appendChild(row);
-    });
-  }
-
-  function moverServico(index, direcao) {
-    const list = getServicosDoBarbeiro(barbeiroAtivoId);
-    const novoIndex = index + direcao;
-    if (novoIndex < 0 || novoIndex >= list.length) return;
-    const temp = list[index];
-    list[index] = list[novoIndex];
-    list[novoIndex] = temp;
-    saveServicosDoBarbeiro(barbeiroAtivoId, list);
-  }
-
-  function adicionarServico() {
-    const nome = document.getElementById('novoServicoNome').value;
-    const preco = parseFloat(document.getElementById('novoServicoPreco').value);
-    if (!nome || isNaN(preco)) return alert('Informe o nome e o preço!');
-    
-    const list = getServicosDoBarbeiro(barbeiroAtivoId);
-    list.push({ id: Date.now(), nome, preco });
-    saveServicosDoBarbeiro(barbeiroAtivoId, list);
-    
-    document.getElementById('novoServicoNome').value = '';
-    document.getElementById('novoServicoPreco').value = '';
-  }
-
-  function atualizarServico(id, campo, valor) {
-    const list = getServicosDoBarbeiro(barbeiroAtivoId);
-    const item = list.find(s => s.id === id);
-    if (item) {
-      item[campo] = valor;
-      saveServicosDoBarbeiro(barbeiroAtivoId, list);
-    }
-  }
-
-  function removerServico(id) {
-    const list = getServicosDoBarbeiro(barbeiroAtivoId).filter(s => s.id !== id);
-    saveServicosDoBarbeiro(barbeiroAtivoId, list);
   }
 
   function atualizarNomeArquivo(input) {
