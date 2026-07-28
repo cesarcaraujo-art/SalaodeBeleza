@@ -3,160 +3,110 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Área da Profissional - Studio & Salão</title>
+  <title>App Profissional PWA</title>
+
+  <link rel="manifest" href="/manifest-prof.json">
+  <meta name="theme-color" content="#8e3a59">
+
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background-color: #fdfaf9; color: #333333; padding: 20px; display: flex; justify-content: center; }
-    .container { max-width: 600px; width: 100%; background: #ffffff; padding: 25px; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.05); border: 1px solid #f7edee; }
+    body { background-color: #fdfaf9; padding: 20px; display: flex; justify-content: center; }
+    .container { max-width: 600px; width: 100%; background: #fff; padding: 25px; border-radius: 16px; border: 1px solid #f7edee; }
     h1, h2 { text-align: center; margin-bottom: 20px; color: #8e3a59; }
-    label { display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 0.9rem; }
-    input, select { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #e0ccd2; background: #ffffff; margin-bottom: 12px; font-size: 0.95rem; }
-    button { cursor: pointer; transition: 0.2s; font-weight: bold; width: 100%; padding: 10px; border-radius: 8px; border: none; font-size: 0.95rem; background: #8e3a59; color: #ffffff; }
+    label { display: block; margin-bottom: 6px; font-weight: bold; color: #555; }
+    input, select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #e0ccd2; margin-bottom: 12px; }
+    
+    .nav-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+    .tab-btn { flex: 1; padding: 10px; background: #fdf8f9; border: 1px solid #e0ccd2; border-radius: 8px; cursor: pointer; text-align: center; font-weight: bold; }
+    .tab-btn.active { background: #8e3a59; color: #fff; }
 
-    .nav-tabs { display: flex; gap: 6px; margin-bottom: 20px; border-bottom: 1px solid #f0e4e8; padding-bottom: 10px; }
-    .tab-btn { flex: 1; padding: 10px; background: #fdf8f9; border: 1px solid #e0ccd2; color: #666; border-radius: 8px; cursor: pointer; font-weight: bold; text-align: center; font-size: 0.85rem; }
-    .tab-btn.active { background: #8e3a59; color: #ffffff; border-color: #8e3a59; }
-
-    .metrics-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+    .metrics-grid { display: grid; grid-template-columns: repeat(1, 1fr); gap: 10px; margin-bottom: 20px; }
     .metric-card { background: #fdf8f9; border: 1px solid #f0e4e8; padding: 15px; border-radius: 10px; text-align: center; }
-    .metric-card h3 { font-size: 0.85rem; color: #666; margin-bottom: 5px; }
+    .metric-card h3 { font-size: 0.85rem; color: #666; }
     .metric-card p { font-size: 1.3rem; font-weight: bold; color: #15803d; }
 
-    .agenda-card { background: #fdf8f9; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #8e3a59; border-top: 1px solid #f2e2e6; border-right: 1px solid #f2e2e6; border-bottom: 1px solid #f2e2e6; }
-    .agenda-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: bold; color: #8e3a59; }
-    .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-    .logout-link { color: #dc2626; font-size: 0.9rem; cursor: pointer; font-weight: bold; }
+    .agenda-card { background: #fdf8f9; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #8e3a59; }
     #loginSection, #panelSection { display: none; }
   </style>
 </head>
 <body>
 
 <div class="container">
-  
-  <!-- TELAS DE LOGIN DA PROFISSIONAL -->
   <div id="loginSection" style="display: block;">
     <h1>Portal da Profissional</h1>
     <form onsubmit="realizarLogin(event)">
-      <label>Selecione seu Nome:</label>
-      <select id="loginProfissionalSelect" required></select>
-      
-      <label>Sua Senha:</label>
+      <label>Nome:</label>
+      <select id="loginProfSelect" required></select>
+      <label>Senha:</label>
       <input type="password" id="loginPass" placeholder="••••••••" required>
-      <button type="submit">Entrar no Meu Painel</button>
+      <button style="width:100%; padding:12px; background:#8e3a59; color:#fff; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">Entrar no Meu Painel</button>
     </form>
   </div>
 
-  <!-- PAINEL RESTRITO DA PROFISSIONAL -->
   <div id="panelSection">
-    <div class="header-actions">
-      <h2 id="welcomeTitle">Olá!</h2>
-      <span class="logout-link" onclick="logout()">Sair</span>
-    </div>
+    <h2 id="profWelcome">Minha Agenda</h2>
 
     <div class="nav-tabs">
       <div class="tab-btn active" onclick="trocarAba('agendaTab', this)">📅 Minha Agenda</div>
       <div class="tab-btn" onclick="trocarAba('ganhosTab', this)">💰 Meus Ganhos</div>
     </div>
 
-    <!-- MINHA AGENDA -->
     <div id="agendaTab" class="tab-content">
-      <label>Filtro:</label>
-      <select id="filtroAgenda" onchange="renderizarMinhaAgenda()">
-        <option value="hoje">📌 Atendimentos de Hoje</option>
-        <option value="semana">📅 Próximos 7 Dias</option>
-        <option value="todos">📋 Todos os Meus Agendamentos</option>
-      </select>
       <div id="listaMinhaAgenda"></div>
     </div>
 
-    <!-- MEUS GANHOS -->
     <div id="ganhosTab" class="tab-content" style="display: none;">
-      <div style="background:#fdf8f9; border: 1px dashed #8e3a59; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
-        <label style="margin: 0 0 4px 0; font-size: 0.8rem;">Filtrar por Mês:</label>
-        <select id="selectMesGanhos" onchange="calcularMeusGanhos()" style="margin:0;">
-          <option value="0">Janeiro</option>
-          <option value="1">Fevereiro</option>
-          <option value="2">Março</option>
-          <option value="3">Abril</option>
-          <option value="4">Maio</option>
-          <option value="5">Junho</option>
-          <option value="6">Julho</option>
-          <option value="7">Agosto</option>
-          <option value="8">Setembro</option>
-          <option value="9">Outubro</option>
-          <option value="10">Novembro</option>
-          <option value="11">Dezembro</option>
-        </select>
-      </div>
-
       <div class="metrics-grid">
-        <div class="metric-card">
-          <h3>Ganho na Semana Atual</h3>
-          <p id="ganhoSemanal">R$ 0,00</p>
-        </div>
-        <div class="metric-card">
-          <h3>Ganho no Mês</h3>
-          <p id="ganhoMensal">R$ 0,00</p>
-        </div>
+        <div class="metric-card"><h3>Minhas Comissões</h3><p id="meuGanhoTotal">R$ 0,00</p></div>
       </div>
-
-      <label>Histórico das Minhas Comissões:</label>
       <div id="listaMeusGanhos"></div>
     </div>
-
   </div>
 </div>
 
 <script>
-  let profissionalLogada = null;
+  let profLogada = null;
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
 
-  function carregarProfissionaisLogin() {
+  async function carregarProfissionais() {
+    try {
+      const res = await fetch('/api/barbeiros');
+      const data = await res.json();
+      if (!data.offline) localStorage.setItem('barbeiros', JSON.stringify(data));
+    } catch(e){}
+
     const barbeiros = JSON.parse(localStorage.getItem('barbeiros')) || [];
-    const select = document.getElementById('loginProfissionalSelect');
+    const select = document.getElementById('loginProfSelect');
     select.innerHTML = '<option value="">Selecione quem é você...</option>';
-    barbeiros.forEach(b => {
-      const opt = document.createElement('option');
-      opt.value = b.nome;
-      opt.innerText = b.nome;
-      select.appendChild(opt);
+    barbeiros.forEach(b => select.innerHTML += `<option value="${b.nome}">${b.nome}</option>`);
+  }
+
+  async function sincronizarECarregar() {
+    try {
+      const res = await fetch('/api/agendamentos');
+      const data = await res.json();
+      if (!data.offline) localStorage.setItem('agendamentos', JSON.stringify(data));
+    } catch(e){}
+
+    const agendamentos = JSON.parse(localStorage.getItem('agendamentos')) || [];
+    const meusAgendamentos = agendamentos.filter(a => a.barbeiro === profLogada);
+
+    const containerA = document.getElementById('listaMinhaAgenda');
+    const containerG = document.getElementById('listaMeusGanhos');
+    containerA.innerHTML = ''; containerG.innerHTML = '';
+    let totalComissao = 0;
+
+    meusAgendamentos.forEach(a => {
+      const valor = parseFloat(a.preco || 0);
+      const pct = a.pctProfissional !== undefined ? a.pctProfissional : 40;
+      const comissao = (valor * pct) / 100;
+      totalComissao += comissao;
+
+      containerA.innerHTML += `<div class="agenda-card"><b>${a.hora} hs - ${a.data}</b><br>${a.cliente} (${a.servico})<br><small>Whats: ${a.whats}</small></div>`;
+      containerG.innerHTML += `<div class="agenda-card" style="border-left-color:#15803d;"><b>${a.servico} (${a.cliente})</b><br><small style="color:#15803d;">+ R$ ${comissao.toFixed(2)} (${pct}%)</small></div>`;
     });
-  }
 
-  function realizarLogin(e) {
-    e.preventDefault();
-    const nome = document.getElementById('loginProfissionalSelect').value;
-    const senha = document.getElementById('loginPass').value.trim();
-
-    if (!nome) return alert('Selecione seu nome.');
-
-    // Senha individual gravada no cadastro ou senha padrão "1234"
-    const senhasProf = JSON.parse(localStorage.getItem('senhasProfissionais')) || {};
-    const senhaCorreta = senhasProf[nome] || '1234';
-
-    if (senha === senhaCorreta) {
-      profissionalLogada = nome;
-      sessionStorage.setItem('profLogada', nome);
-      mostrarPainel();
-    } else {
-      alert('Senha incorreta! (Senha padrão: 1234)');
-    }
-  }
-
-  function mostrarPainel() {
-    document.getElementById('loginSection').style.display = 'none';
-    document.getElementById('panelSection').style.display = 'block';
-    document.getElementById('welcomeTitle').innerText = `👋 Olá, ${profissionalLogada}`;
-    
-    document.getElementById('selectMesGanhos').value = new Date().getMonth();
-    renderizarMinhaAgenda();
-    calcularMeusGanhos();
-  }
-
-  function logout() {
-    sessionStorage.removeItem('profLogada');
-    profissionalLogada = null;
-    document.getElementById('loginSection').style.display = 'block';
-    document.getElementById('panelSection').style.display = 'none';
+    document.getElementById('meuGanhoTotal').innerText = `R$ ${totalComissao.toFixed(2)}`;
   }
 
   function trocarAba(abaId, element) {
@@ -164,151 +114,24 @@
     document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
     document.getElementById(abaId).style.display = 'block';
     element.classList.add('active');
-    
-    if (abaId === 'agendaTab') renderizarMinhaAgenda();
-    if (abaId === 'ganhosTab') calcularMeusGanhos();
   }
 
-  /* RENDERIZA APENAS OS AGENDAMENTOS DA PROFISSIONAL LOGADA */
-  function renderizarMinhaAgenda() {
-    const container = document.getElementById('listaMinhaAgenda');
-    const agendamentos = JSON.parse(localStorage.getItem('agendamentos')) || [];
-    container.innerHTML = '';
+  function realizarLogin(e) {
+    e.preventDefault();
+    const nome = document.getElementById('loginProfSelect').value;
+    const senha = document.getElementById('loginPass').value.trim();
+    const senhas = JSON.parse(localStorage.getItem('senhasProfissionais')) || {};
 
-    const filtro = document.getElementById('filtroAgenda').value;
-    const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0);
-
-    const meusAgendamentos = agendamentos.filter(a => {
-      if (a.barbeiro !== profissionalLogada) return false;
-
-      const partesData = a.data.split('-');
-      const dataItem = new Date(partesData[0], partesData[1] - 1, partesData[2]);
-      dataItem.setHours(0, 0, 0, 0);
-
-      if (filtro === 'hoje') return dataItem.getTime() === hoje.getTime();
-      if (filtro === 'semana') {
-        const proximos7Dias = new Date(hoje);
-        proximos7Dias.setDate(hoje.getDate() + 7);
-        return dataItem >= hoje && dataItem <= proximos7Dias;
-      }
-      return true;
-    });
-
-    if (meusAgendamentos.length === 0) {
-      container.innerHTML = '<p style="color:#888; text-align:center; padding:20px;">Nenhum agendamento encontrado.</p>';
-      return;
-    }
-
-    meusAgendamentos.sort((a, b) => new Date(a.data + 'T' + a.hora) - new Date(b.data + 'T' + b.hora));
-
-    meusAgendamentos.forEach(a => {
-      const card = document.createElement('div');
-      card.className = 'agenda-card';
-      const dataFormatada = a.data.split('-').reverse().join('/');
-      
-      let whatsNum = (a.whats || '').replace(/\D/g, '');
-      if (whatsNum && !whatsNum.startsWith('55') && whatsNum.length <= 11) whatsNum = '55' + whatsNum;
-
-      const linkWhats = whatsNum 
-        ? `<a href="https://api.whatsapp.com/send?phone=${whatsNum}&text=Ol%C3%A1%20${encodeURIComponent(a.cliente)}%2C%20tudo%20bem%3F" target="_blank" style="color: #25d366; font-weight: bold; text-decoration: none;">💬 WhatsApp (${a.whats})</a>`
-        : '<span style="color:#888;">Não informado</span>';
-
-      card.innerHTML = `
-        <div class="agenda-header">
-          <span>🕒 ${a.hora} hs — ${dataFormatada}</span>
-        </div>
-        <div><b>Cliente:</b> ${a.cliente}</div>
-        <div><b>Serviço:</b> ${a.servico} (R$ ${parseFloat(a.preco || 0).toFixed(2).replace('.', ',')})</div>
-        <div style="font-size:0.9rem; margin-top:6px;">📱 Contactar: ${linkWhats}</div>
-      `;
-      container.appendChild(card);
-    });
+    if (senha === (senhas[nome] || '1234')) {
+      profLogada = nome;
+      document.getElementById('loginSection').style.display = 'none';
+      document.getElementById('panelSection').style.display = 'block';
+      document.getElementById('profWelcome').innerText = `👋 Olá, ${nome}`;
+      sincronizarECarregar();
+    } else { alert('Senha incorreta!'); }
   }
 
-  /* CALCULA EXCLUSIVAMENTE OS GANHOS/COMISSÕES DA PROFISSIONAL LOGADA */
-  function calcularMeusGanhos() {
-    const agendamentos = JSON.parse(localStorage.getItem('agendamentos')) || [];
-    const container = document.getElementById('listaMeusGanhos');
-    container.innerHTML = '';
-
-    const mesSelecionado = parseInt(document.getElementById('selectMesGanhos').value);
-
-    let totalSemanal = 0;
-    let totalMensal = 0;
-
-    const hoje = new Date();
-    const inicioSemana = new Date(hoje);
-    inicioSemana.setDate(hoje.getDate() - hoje.getDay());
-    inicioSemana.setHours(0, 0, 0, 0);
-
-    const meusServicosFeitos = [];
-
-    agendamentos.forEach(a => {
-      if (a.barbeiro === profissionalLogada) {
-        const partes = a.data.split('-');
-        const d = new Date(partes[0], partes[1] - 1, partes[2]);
-        
-        const valorTotal = parseFloat(a.preco || 0);
-        const pct = a.pctProfissional !== undefined ? a.pctProfissional : 40;
-        const minhaComissao = (valorTotal * pct) / 100;
-
-        meusServicosFeitos.push({
-          servico: a.servico,
-          cliente: a.cliente,
-          valorTotal,
-          minhaComissao,
-          pct,
-          dataObj: d,
-          dataTxt: a.data
-        });
-      }
-    });
-
-    meusServicosFeitos.sort((a, b) => b.dataObj - a.dataObj);
-
-    meusServicosFeitos.forEach(item => {
-      if (item.dataObj >= inicioSemana) {
-        totalSemanal += item.minhaComissao;
-      }
-
-      if (item.dataObj.getMonth() === mesSelecionado) {
-        totalMensal += item.minhaComissao;
-
-        const card = document.createElement('div');
-        card.className = 'agenda-card';
-        card.style.borderLeftColor = '#15803d';
-        card.innerHTML = `
-          <div class="agenda-header">
-            <span>✂️ ${item.servico} (${item.cliente})</span>
-            <span style="color:#15803d;">+ R$ ${item.minhaComissao.toFixed(2).replace('.', ',')}</span>
-          </div>
-          <div style="font-size:0.85rem; color:#666;">
-            <b>Data:</b> ${item.dataTxt.split('-').reverse().join('/')} | 
-            <b>Valor do Serviço:</b> R$ ${item.valorTotal.toFixed(2).replace('.', ',')} (Sua comissão: ${item.pct}%)
-          </div>
-        `;
-        container.appendChild(card);
-      }
-    });
-
-    if (container.children.length === 0) {
-      container.innerHTML = '<p style="color:#888; text-align:center; padding:20px;">Nenhum ganho registrado para este mês.</p>';
-    }
-
-    document.getElementById('ganhoSemanal').innerText = `R$ ${totalSemanal.toFixed(2).replace('.', ',')}`;
-    document.getElementById('ganhoMensal').innerText = `R$ ${totalMensal.toFixed(2).replace('.', ',')}`;
-  }
-
-  window.addEventListener('DOMContentLoaded', () => {
-    carregarProfissionaisLogin();
-    const profSalva = sessionStorage.getItem('profLogada');
-    if (profSalva) {
-      profissionalLogada = profSalva;
-      mostrarPainel();
-    }
-  });
+  window.addEventListener('DOMContentLoaded', carregarProfissionais);
 </script>
-
 </body>
 </html>
