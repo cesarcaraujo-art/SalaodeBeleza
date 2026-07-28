@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel do Salão - Gestão Local</title>
+  <title>Painel do Salão - Gestão Geral (Dono)</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body { background-color: #fdfaf9; color: #333333; padding: 20px; display: flex; justify-content: center; }
@@ -42,7 +42,6 @@
     .color-picker-item { flex: 1; }
     .color-picker-item input[type="color"] { width: 100%; height: 40px; border-radius: 8px; border: 1px solid #e0ccd2; cursor: pointer; padding: 2px; background: #fff; }
 
-    /* ESTILOS DE FATURAMENTO COM COMISSÃO */
     .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
     .metric-card { background: #fdf8f9; border: 1px solid #f0e4e8; padding: 12px; border-radius: 10px; text-align: center; }
     .metric-card h3 { font-size: 0.8rem; color: #666; margin-bottom: 5px; }
@@ -62,40 +61,40 @@
 <div class="container">
   
   <div id="loginSection" style="display: block;">
-    <h1>Portal da Profissional</h1>
+    <h1>Painel do Estabelecimento (Dono)</h1>
     <form onsubmit="realizarLogin(event)">
       <label>Usuário:</label>
       <input type="text" id="loginUser" placeholder="admin" required>
-      <label>Senha:</label>
+      <label>Senha do Dono:</label>
       <input type="password" id="loginPass" placeholder="••••••••" required>
-      <button type="submit" class="btn-primary" id="btnSubmitLogin">Entrar no Painel</button>
+      <button type="submit" class="btn-primary" id="btnSubmitLogin">Entrar como Administrador</button>
     </form>
   </div>
 
   <div id="adminPanel">
     <div class="header-actions">
-      <h2>⚙️ Gestão do Salão</h2>
+      <h2>⚙️ Gestão Geral do Salão</h2>
       <span class="logout-link" onclick="logout()">Sair</span>
     </div>
 
     <div class="barber-selector-bar">
-      <label for="barbeiroAtivoSelect">Você está gerenciando a agenda de:</label>
+      <label for="barbeiroAtivoSelect">Você está gerenciando as configurações de:</label>
       <select id="barbeiroAtivoSelect" onchange="trocarBarbeiroAtivo(this.value)" style="margin-bottom:0;"></select>
     </div>
 
     <div class="nav-tabs">
-      <div class="tab-btn active" onclick="trocarAba('agendaTab', this)">📅 Agenda</div>
+      <div class="tab-btn active" onclick="trocarAba('agendaTab', this)">📅 Agenda Geral</div>
       <div class="tab-btn" onclick="trocarAba('diasTab', this)">🗓️ Dias</div>
       <div class="tab-btn" onclick="trocarAba('horariosTab', this)">⏰ Horários</div>
       <div class="tab-btn" onclick="trocarAba('servicosTab', this)">✂️ Serviços</div>
       <div class="tab-btn" onclick="trocarAba('produtosTab', this)">📦 Produtos</div>
       <div class="tab-btn" onclick="trocarAba('faturamentoTab', this)">📊 Faturamento</div>
-      <div class="tab-btn" onclick="trocarAba('perfilTab', this)">👤 Equipe</div>
+      <div class="tab-btn" onclick="trocarAba('perfilTab', this)">👤 Equipe & Senhas</div>
       <div class="tab-btn" onclick="trocarAba('siteTab', this)">⚙️ Site</div>
-      <div class="tab-btn" onclick="trocarAba('senhaTab', this)">🔑 Senha</div>
+      <div class="tab-btn" onclick="trocarAba('senhaTab', this)">🔑 Senha Dono</div>
     </div>
 
-    <!-- AGENDA -->
+    <!-- AGENDA GERAL -->
     <div id="agendaTab" class="tab-content">
       <div style="display: flex; gap: 10px; margin-bottom: 15px;">
         <div style="flex: 1;">
@@ -217,23 +216,24 @@
           <p id="fatTotalBruto">R$ 0,00</p>
         </div>
         <div class="metric-card">
-          <h3>Comissão Profissional</h3>
+          <h3>Comissões Equipe</h3>
           <p id="fatComissaoProf" style="color: #15803d;">R$ 0,00</p>
         </div>
         <div class="metric-card">
-          <h3>Parte da Casa (Dono)</h3>
+          <h3>Lucro do Salão (Dono)</h3>
           <p id="fatParteDono" style="color: #8e3a59;">R$ 0,00</p>
         </div>
       </div>
-      <label>Detalhamento das Entradas e Divisão:</label>
+      <label>Detalhamento de Entradas e Divisão:</label>
       <div id="listaHistoricoVendas"></div>
     </div>
 
-    <!-- EQUIPE -->
+    <!-- EQUIPE E DEFINIÇÃO DE SENHAS INDIVIDUAIS -->
     <div id="perfilTab" class="tab-content" style="display: none;">
       <div class="admin-card">
         <label>Cadastrar Nova Profissional:</label>
         <input type="text" id="newNome" placeholder="Nome da Profissional">
+        <input type="password" id="newSenhaProf" placeholder="Senha de Acesso para esta Profissional (Padrão: 1234)">
         <div class="file-input-wrapper">
           <label class="custom-file-btn" for="newFotoFile">📷 Selecionar Foto</label>
           <input type="file" id="newFotoFile" accept="image/*" onchange="atualizarNomeArquivo(this)">
@@ -241,7 +241,7 @@
         </div>
         <button class="btn-add" onclick="adicionarBarbeiro()">+ Cadastrar Profissional</button>
       </div>
-      <label>Profissionais Cadastradas:</label>
+      <label>Profissionais e Senhas de Acesso:</label>
       <div id="adminList"></div>
     </div>
 
@@ -301,12 +301,12 @@
       </div>
     </div>
 
-    <!-- SENHA -->
+    <!-- SENHA DONO -->
     <div id="senhaTab" class="tab-content" style="display: none;">
       <div class="admin-card">
-        <label>🔒 Nova Senha de Acesso:</label>
+        <label>🔒 Nova Senha do Dono (Admin):</label>
         <input type="password" id="novaSenhaInput" placeholder="Mínimo 4 caracteres">
-        <button class="btn-add" onclick="salvarNovaSenha()">🔑 Atualizar Senha de Acesso</button>
+        <button class="btn-add" onclick="salvarNovaSenha()">🔑 Atualizar Senha de Acesso do Dono</button>
       </div>
     </div>
 
@@ -440,9 +440,7 @@
       const dataFormatada = a.data.split('-').reverse().join('/');
       
       let whatsNum = (a.whats || '').replace(/\D/g, '');
-      if (whatsNum && !whatsNum.startsWith('55') && whatsNum.length <= 11) {
-        whatsNum = '55' + whatsNum;
-      }
+      if (whatsNum && !whatsNum.startsWith('55') && whatsNum.length <= 11) whatsNum = '55' + whatsNum;
 
       const linkWhats = whatsNum 
         ? `<a href="https://api.whatsapp.com/send?phone=${whatsNum}&text=Ol%C3%A1%20${encodeURIComponent(a.cliente)}%2C%20tudo%20bem%3F%20Falo%20do%20Studio%20de%20Beleza." target="_blank" style="color: #25d366; font-weight: bold; text-decoration: none;">💬 Falar no WhatsApp (${a.whats})</a>`
@@ -471,7 +469,7 @@
     }
   }
 
-  /* GESTÃO DE SERVIÇOS E PORCENTAGEM DA PROFISSIONAL */
+  /* SERVIÇOS E COMISSÕES */
   function renderizarServicos() {
     const list = getServicosDoBarbeiro(barbeiroAtivoId);
     const container = document.getElementById('listaServicos');
@@ -537,7 +535,7 @@
     saveServicosDoBarbeiro(barbeiroAtivoId, list);
   }
 
-  /* PRODUTOS E ESTOQUE */
+  /* PRODUTOS */
   function getProdutos() { return JSON.parse(localStorage.getItem('produtos')) || []; }
   
   function adicionarProduto() {
@@ -631,7 +629,7 @@
     renderizarProdutos();
   }
 
-  /* FATURAMENTO COM DIVISÃO DE COMISSÃO DA PROFISSIONAL E DONO */
+  /* FATURAMENTO */
   function renderizarFaturamento() {
     const agendamentos = JSON.parse(localStorage.getItem('agendamentos')) || [];
     const vendasAvulsas = JSON.parse(localStorage.getItem('vendasAvulsas')) || [];
@@ -698,19 +696,12 @@
 
       if (bateBarbeiro && itemMes === mesSelecionado) {
         let pertenceSemana = false;
-        if (semanaSelecionada === 'todas') {
-          pertenceSemana = true;
-        } else if (semanaSelecionada === '1' && itemDia >= 1 && itemDia <= 7) {
-          pertenceSemana = true;
-        } else if (semanaSelecionada === '2' && itemDia >= 8 && itemDia <= 14) {
-          pertenceSemana = true;
-        } else if (semanaSelecionada === '3' && itemDia >= 15 && itemDia <= 21) {
-          pertenceSemana = true;
-        } else if (semanaSelecionada === '4' && itemDia >= 22 && itemDia <= 28) {
-          pertenceSemana = true;
-        } else if (semanaSelecionada === '5' && itemDia >= 29) {
-          pertenceSemana = true;
-        }
+        if (semanaSelecionada === 'todas') pertenceSemana = true;
+        else if (semanaSelecionada === '1' && itemDia >= 1 && itemDia <= 7) pertenceSemana = true;
+        else if (semanaSelecionada === '2' && itemDia >= 8 && itemDia <= 14) pertenceSemana = true;
+        else if (semanaSelecionada === '3' && itemDia >= 15 && itemDia <= 21) pertenceSemana = true;
+        else if (semanaSelecionada === '4' && itemDia >= 22 && itemDia <= 28) pertenceSemana = true;
+        else if (semanaSelecionada === '5' && itemDia >= 29) pertenceSemana = true;
 
         if (pertenceSemana) {
           totalBruto += item.valor;
@@ -807,7 +798,8 @@
   }
 
   async function adicionarBarbeiro() {
-    const nome = document.getElementById('newNome').value;
+    const nome = document.getElementById('newNome').value.trim();
+    const senha = document.getElementById('newSenhaProf').value.trim() || '1234';
     const fileInput = document.getElementById('newFotoFile');
     if (!nome) return alert('Digite o nome da profissional!');
 
@@ -820,36 +812,25 @@
     barbeiros.push({ id: Date.now(), nome, foto: fotoStr });
     saveItem('barbeiros', barbeiros);
 
+    const senhasProf = JSON.parse(localStorage.getItem('senhasProfissionais')) || {};
+    senhasProf[nome] = senha;
+    saveItem('senhasProfissionais', senhasProf);
+
     alert('Profissional cadastrada com sucesso!');
     document.getElementById('newNome').value = '';
+    document.getElementById('newSenhaProf').value = '';
     fileInput.value = '';
     document.getElementById('fileNameDisplay').innerText = 'Nenhum arquivo selecionado';
     carregarSeletorBarbeiros();
     renderizarBarbeiros();
   }
 
-  async function alterarFotoExistente(id, fileInput) {
-    if (fileInput.files.length === 0) return;
-    const novaFoto = await converterBase64(fileInput.files[0]);
-    const barbeiros = getBarbeiros();
-    const b = barbeiros.find(x => x.id == id);
-    if (b) {
-      b.foto = novaFoto;
-      saveItem('barbeiros', barbeiros);
-      alert('Foto atualizada com sucesso!');
-      renderizarBarbeiros();
-    }
-  }
-
-  function atualizarBarbeiro(id, nome) {
-    if (!nome.trim()) return;
-    const barbeiros = getBarbeiros();
-    const b = barbeiros.find(x => x.id == id);
-    if (b) {
-      b.nome = nome.trim();
-      saveItem('barbeiros', barbeiros);
-      carregarSeletorBarbeiros();
-    }
+  function atualizarSenhaProfissional(nome, novaSenha) {
+    if (!novaSenha.trim()) return;
+    const senhasProf = JSON.parse(localStorage.getItem('senhasProfissionais')) || {};
+    senhasProf[nome] = novaSenha.trim();
+    saveItem('senhasProfissionais', senhasProf);
+    alert(`Senha de ${nome} atualizada!`);
   }
 
   function removerBarbeiro(id) {
@@ -864,17 +845,18 @@
 
   function renderizarBarbeiros() {
     const list = getBarbeiros();
+    const senhasProf = JSON.parse(localStorage.getItem('senhasProfissionais')) || {};
     const container = document.getElementById('adminList');
     container.innerHTML = '';
     
     list.forEach(b => {
+      const senhaAtual = senhasProf[b.nome] || '1234';
       const row = document.createElement('div');
       row.className = 'item-row';
       row.innerHTML = `
         <img src="${b.foto || fotoPadrao}" alt="${b.nome}">
-        <input type="text" value="${b.nome}" onchange="atualizarBarbeiro('${b.id}', this.value)" style="flex:1; margin:0;">
-        <label class="custom-file-btn" for="file_${b.id}" style="width:auto; padding:6px 10px; margin:0;">Foto</label>
-        <input type="file" id="file_${b.id}" accept="image/*" onchange="alterarFotoExistente('${b.id}', this)">
+        <span style="flex:1; font-weight:bold;">${b.nome}</span>
+        <input type="text" value="${senhaAtual}" placeholder="Senha" onchange="atualizarSenhaProfissional('${b.nome}', this.value)" style="width:100px; margin:0;" title="Senha da Profissional">
         <button class="btn-danger" onclick="removerBarbeiro('${b.id}')">✖</button>
       `;
       container.appendChild(row);
@@ -927,11 +909,9 @@
 
   function salvarNovaSenha() {
     const novaSenha = document.getElementById('novaSenhaInput').value;
-    if (!novaSenha || novaSenha.length < 4) {
-      return alert('A senha deve ter no mínimo 4 caracteres.');
-    }
+    if (!novaSenha || novaSenha.length < 4) return alert('A senha deve ter no mínimo 4 caracteres.');
     localStorage.setItem('adminSenha', novaSenha.trim());
-    alert('🔑 Senha alterada com sucesso!');
+    alert('🔑 Senha do Dono alterada com sucesso!');
     document.getElementById('novaSenhaInput').value = '';
   }
 
