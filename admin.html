@@ -7,7 +7,7 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body { background-color: #fdfaf9; color: #333333; padding: 20px; display: flex; justify-content: center; }
-    .container { max-width: 650px; width: 100%; background: #ffffff; padding: 25px; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.05); border: 1px solid #f7edee; }
+    .container { max-width: 750px; width: 100%; background: #ffffff; padding: 25px; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.05); border: 1px solid #f7edee; }
     h1, h2 { text-align: center; margin-bottom: 20px; color: #8e3a59; }
     label { display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 0.9rem; }
     input[type="text"], input[type="email"], input[type="password"], input[type="number"], select { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #e0ccd2; background: #ffffff; color: #333; margin-bottom: 12px; font-size: 0.95rem; }
@@ -20,7 +20,6 @@
     .btn-primary { background: #8e3a59; color: #ffffff; }
     .btn-danger { background: #dc2626; color: #fff; width: auto; padding: 6px 12px; font-size: 0.85rem; }
     .btn-add { background: #15803d; color: #fff; margin-top: 5px; }
-
     .btn-order { background: #f5f5f5; color: #8e3a59; border: 1px solid #ddd; padding: 6px 10px; border-radius: 4px; font-size: 0.85rem; width: auto; }
     
     .admin-card { background: #fdf8f9; border: 1px dashed #8e3a59; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
@@ -39,17 +38,20 @@
     input[type="file"] { display: none; }
     .custom-file-btn { display: inline-block; padding: 10px 15px; background: #f5f5f5; border: 1px solid #ccc; color: #555; border-radius: 8px; cursor: pointer; font-size: 0.85rem; width: 100%; text-align: center; }
 
-    /* ESTILO DOS SELETORES DE COR */
     .color-picker-group { display: flex; gap: 15px; margin-bottom: 15px; }
     .color-picker-item { flex: 1; }
     .color-picker-item input[type="color"] { width: 100%; height: 40px; border-radius: 8px; border: 1px solid #e0ccd2; cursor: pointer; padding: 2px; background: #fff; }
 
+    /* ESTILOS DE FATURAMENTO */
+    .metrics-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+    .metric-card { background: #fdf8f9; border: 1px solid #f0e4e8; padding: 15px; border-radius: 10px; text-align: center; }
+    .metric-card h3 { font-size: 0.9rem; color: #666; margin-bottom: 5px; }
+    .metric-card p { font-size: 1.4rem; font-weight: bold; color: #8e3a59; }
+
     #loginSection, #adminPanel { display: none; }
     .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
     .logout-link { color: #dc2626; font-size: 0.9rem; cursor: pointer; }
-    
     .barber-selector-bar { background: #fdf8f9; padding: 12px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #f2e2e6; }
-
     .gallery-upload-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 10px; }
     .gallery-upload-card { background: #fff; border: 1px solid #f0e4e8; padding: 10px; border-radius: 8px; text-align: center; }
     .gallery-upload-card img { width: 100%; height: 90px; object-fit: cover; border-radius: 6px; margin-bottom: 8px; border: 1px solid #ddd; }
@@ -78,8 +80,7 @@
 
     <div class="barber-selector-bar">
       <label for="barbeiroAtivoSelect">Você está gerenciando a agenda de:</label>
-      <select id="barbeiroAtivoSelect" onchange="trocarBarbeiroAtivo(this.value)" style="margin-bottom:0;">
-      </select>
+      <select id="barbeiroAtivoSelect" onchange="trocarBarbeiroAtivo(this.value)" style="margin-bottom:0;"></select>
     </div>
 
     <div class="nav-tabs">
@@ -87,11 +88,14 @@
       <div class="tab-btn" onclick="trocarAba('diasTab', this)">🗓️ Dias</div>
       <div class="tab-btn" onclick="trocarAba('horariosTab', this)">⏰ Horários</div>
       <div class="tab-btn" onclick="trocarAba('servicosTab', this)">✂️ Serviços</div>
+      <div class="tab-btn" onclick="trocarAba('produtosTab', this)">📦 Produtos</div>
+      <div class="tab-btn" onclick="trocarAba('faturamentoTab', this)">📊 Faturamento</div>
       <div class="tab-btn" onclick="trocarAba('perfilTab', this)">👤 Equipe</div>
       <div class="tab-btn" onclick="trocarAba('siteTab', this)">⚙️ Site</div>
       <div class="tab-btn" onclick="trocarAba('senhaTab', this)">🔑 Senha</div>
     </div>
 
+    <!-- AGENDA -->
     <div id="agendaTab" class="tab-content">
       <div style="display: flex; gap: 10px; margin-bottom: 15px;">
         <div style="flex: 1;">
@@ -106,6 +110,7 @@
       <div id="listaAgendamentos"></div>
     </div>
 
+    <!-- DIAS -->
     <div id="diasTab" class="tab-content" style="display: none;">
       <label>Selecione os dias de atendimento:</label>
       <div class="checkbox-grid">
@@ -119,11 +124,13 @@
       </div>
     </div>
 
+    <!-- HORÁRIOS -->
     <div id="horariosTab" class="tab-content" style="display: none;">
       <label>Selecione os horários disponíveis para agendamento:</label>
       <div class="checkbox-grid" id="gridHorariosConfig"></div>
     </div>
 
+    <!-- SERVIÇOS -->
     <div id="servicosTab" class="tab-content" style="display: none;">
       <div class="admin-card">
         <label>Cadastrar Serviço para esta Profissional:</label>
@@ -135,6 +142,48 @@
       <div id="listaServicos"></div>
     </div>
 
+    <!-- PRODUTOS E ESTOQUE -->
+    <div id="produtosTab" class="tab-content" style="display: none;">
+      <div class="admin-card">
+        <label>Cadastrar Novo Produto para Venda:</label>
+        <input type="text" id="novoProdNome" placeholder="Ex: Shampoo Pós-Química 500ml">
+        <div style="display:flex; gap:10px;">
+          <input type="number" id="novoProdPreco" placeholder="Preço (R$)" step="0.01">
+          <input type="number" id="novoProdQtd" placeholder="Qtd Estoque">
+        </div>
+        <button class="btn-add" onclick="adicionarProduto()">+ Cadastrar Produto</button>
+      </div>
+
+      <div class="admin-card">
+        <label>🛒 Registrar Venda Avulsa de Produto:</label>
+        <select id="selectVendaProd"></select>
+        <div style="display:flex; gap:10px;">
+          <input type="number" id="qtdVendaProd" placeholder="Qtd" value="1" min="1">
+          <button class="btn-primary" onclick="registrarVendaProduto()">Confirmar Venda</button>
+        </div>
+      </div>
+
+      <label>Produtos em Estoque:</label>
+      <div id="listaProdutos"></div>
+    </div>
+
+    <!-- FATURAMENTO -->
+    <div id="faturamentoTab" class="tab-content" style="display: none;">
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <h3>Faturamento Semanal</h3>
+          <p id="fatSemanal">R$ 0,00</p>
+        </div>
+        <div class="metric-card">
+          <h3>Faturamento Mensal</h3>
+          <p id="fatMensal">R$ 0,00</p>
+        </div>
+      </div>
+      <label>Histórico de Entradas (Serviços e Vendas):</label>
+      <div id="listaHistoricoVendas"></div>
+    </div>
+
+    <!-- EQUIPE -->
     <div id="perfilTab" class="tab-content" style="display: none;">
       <div class="admin-card">
         <label>Cadastrar Nova Profissional:</label>
@@ -150,6 +199,7 @@
       <div id="adminList"></div>
     </div>
 
+    <!-- SITE -->
     <div id="siteTab" class="tab-content" style="display: none;">
       <div class="admin-card">
         <label>🎨 Personalização de Cores do Site:</label>
@@ -205,6 +255,7 @@
       </div>
     </div>
 
+    <!-- SENHA -->
     <div id="senhaTab" class="tab-content" style="display: none;">
       <div class="admin-card">
         <label>🔒 Nova Senha de Acesso:</label>
@@ -280,6 +331,8 @@
     if (abaAtiva.includes('diasTab')) carregarDiasAtendimento();
     if (abaAtiva.includes('horariosTab')) renderizarHorariosConfig();
     if (abaAtiva.includes('servicosTab')) renderizarServicos();
+    if (abaAtiva.includes('produtosTab')) renderizarProdutos();
+    if (abaAtiva.includes('faturamentoTab')) renderizarFaturamento();
     if (abaAtiva.includes('perfilTab')) renderizarBarbeiros();
     if (abaAtiva.includes('siteTab')) carregarConfiguracoesSite();
   }
@@ -339,7 +392,7 @@
           <span>💅 ${a.barbeiro}</span>
         </div>
         <div><b>Cliente:</b> ${a.cliente}</div>
-        <div><b>Serviço:</b> ${a.servico}</div>
+        <div><b>Serviço:</b> ${a.servico} (R$ ${parseFloat(a.preco || 0).toFixed(2).replace('.', ',')})</div>
         <div style="font-size:0.9rem; margin-top:8px;">📱 Whats: ${linkWhats}</div>
       `;
       container.appendChild(card);
@@ -353,6 +406,154 @@
       localStorage.setItem('agendamentos', JSON.stringify(agendamentos));
       renderizarAgenda();
     }
+  }
+
+  /* GESTÃO DE PRODUTOS E ESTOQUE */
+  function getProdutos() { return JSON.parse(localStorage.getItem('produtos')) || []; }
+  
+  function adicionarProduto() {
+    const nome = document.getElementById('novoProdNome').value.trim();
+    const preco = parseFloat(document.getElementById('novoProdPreco').value);
+    const qtd = parseInt(document.getElementById('novoProdQtd').value);
+
+    if (!nome || isNaN(preco) || isNaN(qtd)) return alert('Preencha os dados do produto corretamente.');
+
+    const produtos = getProdutos();
+    produtos.push({ id: Date.now(), nome, preco, qtd });
+    saveItem('produtos', produtos);
+
+    document.getElementById('novoProdNome').value = '';
+    document.getElementById('novoProdPreco').value = '';
+    document.getElementById('novoProdQtd').value = '';
+    renderizarProdutos();
+  }
+
+  function renderizarProdutos() {
+    const produtos = getProdutos();
+    const container = document.getElementById('listaProdutos');
+    const selectVenda = document.getElementById('selectVendaProd');
+    container.innerHTML = '';
+    selectVenda.innerHTML = '<option value="">Selecione um produto...</option>';
+
+    if (produtos.length === 0) {
+      container.innerHTML = '<p style="color:#888; text-align:center;">Nenhum produto cadastrado.</p>';
+      return;
+    }
+
+    produtos.forEach(p => {
+      const row = document.createElement('div');
+      row.className = 'item-row';
+      row.innerHTML = `
+        <input type="text" value="${p.nome}" onchange="atualizarProd(${p.id}, 'nome', this.value)" style="flex:2; margin:0;">
+        <input type="number" value="${parseFloat(p.preco).toFixed(2)}" step="0.01" onchange="atualizarProd(${p.id}, 'preco', parseFloat(this.value))" style="flex:1; margin:0;" title="Preço">
+        <input type="number" value="${p.qtd}" onchange="atualizarProd(${p.id}, 'qtd', parseInt(this.value))" style="flex:1; margin:0;" title="Estoque">
+        <button class="btn-danger" onclick="removerProd(${p.id})">✖</button>
+      `;
+      container.appendChild(row);
+
+      if (p.qtd > 0) {
+        const opt = document.createElement('option');
+        opt.value = p.id;
+        opt.innerText = `${p.nome} - R$ ${p.preco.toFixed(2)} (Estoque: ${p.qtd})`;
+        selectVenda.appendChild(opt);
+      }
+    });
+  }
+
+  function atualizarProd(id, campo, valor) {
+    const produtos = getProdutos();
+    const item = produtos.find(p => p.id === id);
+    if (item) {
+      item[campo] = valor;
+      saveItem('produtos', produtos);
+      renderizarProdutos();
+    }
+  }
+
+  function removerProd(id) {
+    const produtos = getProdutos().filter(p => p.id !== id);
+    saveItem('produtos', produtos);
+    renderizarProdutos();
+  }
+
+  function registrarVendaProduto() {
+    const prodId = document.getElementById('selectVendaProd').value;
+    const qtdVenda = parseInt(document.getElementById('qtdVendaProd').value);
+    if (!prodId || isNaN(qtdVenda) || qtdVenda < 1) return alert('Selecione um produto e uma quantidade válida.');
+
+    const produtos = getProdutos();
+    const prod = produtos.find(p => p.id == prodId);
+    if (!prod || prod.qtd < qtdVenda) return alert('Estoque insuficiente para esta venda.');
+
+    prod.qtd -= qtdVenda;
+    saveItem('produtos', produtos);
+
+    const vendas = JSON.parse(localStorage.getItem('vendasAvulsas')) || [];
+    vendas.push({
+      id: Date.now(),
+      tipo: 'Produto',
+      descricao: `${qtdVenda}x ${prod.nome}`,
+      valor: prod.preco * qtdVenda,
+      data: new Date().toISOString()
+    });
+    saveItem('vendasAvulsas', vendas);
+
+    alert('Venda registrada e estoque atualizado!');
+    renderizarProdutos();
+  }
+
+  /* FATURAMENTO SEMANAL E MENSAL */
+  function renderizarFaturamento() {
+    const agendamentos = JSON.parse(localStorage.getItem('agendamentos')) || [];
+    const vendasAvulsas = JSON.parse(localStorage.getItem('vendasAvulsas')) || [];
+    const container = document.getElementById('listaHistoricoVendas');
+    container.innerHTML = '';
+
+    let totalSemanal = 0;
+    let totalMensal = 0;
+
+    const hoje = new Date();
+    const inicioSemana = new Date(hoje);
+    inicioSemana.setDate(hoje.getDate() - hoje.getDay());
+    inicioSemana.setHours(0, 0, 0, 0);
+
+    const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+
+    const historicoGeral = [];
+
+    agendamentos.forEach(a => {
+      const partes = a.data.split('-');
+      const d = new Date(partes[0], partes[1] - 1, partes[2]);
+      const valor = parseFloat(a.preco || 0);
+      historicoGeral.push({ tipo: 'Serviço', descricao: `${a.servico} (${a.cliente})`, valor, dataObj: d, dataTxt: a.data });
+    });
+
+    vendasAvulsas.forEach(v => {
+      const d = new Date(v.data);
+      historicoGeral.push({ tipo: 'Produto', descricao: v.descricao, valor: parseFloat(v.valor), dataObj: d, dataTxt: d.toISOString().split('T')[0] });
+    });
+
+    historicoGeral.sort((a, b) => b.dataObj - a.dataObj);
+
+    historicoGeral.forEach(item => {
+      if (item.dataObj >= inicioSemana) totalSemanal += item.valor;
+      if (item.dataObj >= inicioMes) totalMensal += item.valor;
+
+      const card = document.createElement('div');
+      card.className = 'agenda-card';
+      card.style.borderLeftColor = item.tipo === 'Serviço' ? '#8e3a59' : '#15803d';
+      card.innerHTML = `
+        <div class="agenda-header">
+          <span>${item.tipo === 'Serviço' ? '✂️' : '📦'} ${item.descricao}</span>
+          <span>R$ ${item.valor.toFixed(2).replace('.', ',')}</span>
+        </div>
+        <div style="font-size:0.85rem; color:#666;">Data: ${item.dataTxt.split('-').reverse().join('/')}</div>
+      `;
+      container.appendChild(card);
+    });
+
+    document.getElementById('fatSemanal').innerText = `R$ ${totalSemanal.toFixed(2).replace('.', ',')}`;
+    document.getElementById('fatMensal').innerText = `R$ ${totalMensal.toFixed(2).replace('.', ',')}`;
   }
 
   function carregarDiasAtendimento() {
