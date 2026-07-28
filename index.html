@@ -4,270 +4,98 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Agendamento - Studio & Salão de Beleza</title>
+
+  <link rel="manifest" href="/manifest-cliente.json">
+  <meta name="theme-color" content="#8e3a59">
   
   <style>
-    :root {
-      --primary-color: #8e3a59;
-      --bg-color: #fdfaf9;
-    }
-
+    :root { --primary-color: #8e3a59; --bg-color: #fdfaf9; }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     html { scroll-behavior: smooth; }
-    
-    body {
-      background-color: var(--bg-color);
-      color: #333333;
-      padding-top: 70px;
-      -webkit-touch-callout: none;
-      -webkit-user-select: none;
-      user-select: none;
-    }
-
-    img {
-      -webkit-user-drag: none;
-      user-drag: none;
-      pointer-events: none;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .animate-fade-in { animation: fadeIn 0.8s ease forwards; }
-    .hover-scale { transition: transform 0.3s ease, box-shadow 0.3s ease; }
-    .hover-scale:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); }
-
-    header.navbar {
-      position: fixed; top: 0; left: 0; width: 100%; height: 70px;
-      background: #ffffff; border-bottom: 1px solid #f0e4e8; z-index: 1000;
-      display: flex; justify-content: space-between; align-items: center; padding: 0 25px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.03);
-    }
+    body { background-color: var(--bg-color); color: #333; padding-top: 70px; user-select: none; }
+    header.navbar { position: fixed; top: 0; left: 0; width: 100%; height: 70px; background: #fff; border-bottom: 1px solid #f0e4e8; z-index: 1000; display: flex; justify-content: space-between; align-items: center; padding: 0 25px; }
     .navbar-brand { font-size: 1.3rem; font-weight: bold; color: var(--primary-color); text-decoration: none; }
-    .nav-links { display: flex; gap: 20px; list-style: none; }
-    .nav-links a { color: #666; text-decoration: none; font-size: 0.95rem; font-weight: 500; transition: 0.2s; }
-    .nav-links a:hover { color: var(--primary-color); }
-
-    .container { max-width: 900px; width: 90%; margin: 30px auto; background: #ffffff; padding: 30px; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.05); border: 1px solid #f7edee; }
+    .container { max-width: 900px; width: 90%; margin: 30px auto; background: #fff; padding: 30px; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.05); }
     h1, h2, h3 { text-align: center; margin-bottom: 20px; color: var(--primary-color); }
-    
-    .hero-section { text-align: center; padding: 30px 10px; border-bottom: 1px solid #f0e4e8; margin-bottom: 30px; }
-    .schedule-badge { display: inline-block; background: #fbf0f3; color: var(--primary-color); padding: 6px 18px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; margin-bottom: 15px; border: 1px solid #e2c2cb; }
-    .hero-title { font-size: 2.2rem; color: #2d2a2b; margin-bottom: 10px; }
-    .hero-subtitle { color: #777; font-size: 1rem; margin-bottom: 20px; }
-
     .step { margin-bottom: 30px; background: #fdf8f9; padding: 20px; border-radius: 12px; border: 1px solid #f2e2e6; }
     label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; }
-    select, input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #e0ccd2; background: #ffffff; color: #333; margin-bottom: 15px; font-size: 1rem; }
-
-    .barbeiros-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; margin-top: 10px; }
-    .barbeiro-card { background: #ffffff; border: 2px solid #f2e2e6; border-radius: 12px; padding: 15px; text-align: center; cursor: pointer; transition: 0.3s; }
-    .barbeiro-card:hover, .barbeiro-card.selected { border-color: var(--primary-color); background: #fbf0f3; }
+    select, input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #e0ccd2; background: #fff; margin-bottom: 15px; font-size: 1rem; }
+    .barbeiros-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; }
+    .barbeiro-card { background: #fff; border: 2px solid #f2e2e6; border-radius: 12px; padding: 15px; text-align: center; cursor: pointer; }
+    .barbeiro-card.selected { border-color: var(--primary-color); background: #fbf0f3; }
     .barbeiro-card img { width: 75px; height: 75px; border-radius: 50%; object-fit: cover; margin-bottom: 8px; border: 2px solid var(--primary-color); }
-
     .slots-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 10px; }
-    .slot-btn { padding: 10px; background: #ffffff; border: 1px solid #e0ccd2; color: #444; border-radius: 8px; cursor: pointer; transition: 0.2s; font-size: 0.9rem; }
-    .slot-btn:hover:not(:disabled), .slot-btn.selected { background: var(--primary-color); color: #ffffff; font-weight: bold; }
-    .slot-btn:disabled, .slot-btn.ocupado { background: #f5f5f5 !important; border-color: #e0e0e0 !important; color: #aaa !important; cursor: not-allowed !important; opacity: 0.6; }
-
-    button.submit-btn { width: 100%; padding: 15px; background: var(--primary-color); color: #ffffff; border: none; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; }
-    button.submit-btn:hover { opacity: 0.9; }
-
+    .slot-btn { padding: 10px; background: #fff; border: 1px solid #e0ccd2; color: #444; border-radius: 8px; cursor: pointer; }
+    .slot-btn.selected { background: var(--primary-color); color: #fff; font-weight: bold; }
+    .slot-btn:disabled { background: #f5f5f5; color: #aaa; cursor: not-allowed; }
+    button.submit-btn { width: 100%; padding: 15px; background: var(--primary-color); color: #fff; border: none; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; }
     .confirmation-box { display: none; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 20px; border-radius: 12px; margin-top: 20px; }
-    .action-btn { display: block; width: 100%; padding: 12px; border-radius: 8px; text-align: center; font-weight: bold; text-decoration: none; margin-top: 10px; font-size: 0.95rem; }
-    .calendar-action { background: #4285f4; color: #fff; }
-    .calendar-action:hover { background: #3367d6; }
-
-    .section-standard { margin-top: 40px; padding-top: 20px; border-top: 1px solid #f0e4e8; }
-    .map-wrapper { width: 100%; max-width: 100%; height: 300px; border-radius: 12px; overflow: hidden; margin-top: 15px; border: 1px solid #e0ccd2; }
-    
-    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-top: 15px; }
-    .gallery-item img { width: 100%; height: 120px; object-fit: cover; border-radius: 8px; border: 1px solid #f2e2e6; }
-
-    .whatsapp-float {
-      position: fixed; bottom: 20px; right: 20px;
-      background: #25d366; color: #fff;
-      width: 55px; height: 55px; border-radius: 50%;
-      display: flex; justify-content: center; align-items: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 9999;
-      text-decoration: none; font-size: 28px;
-    }
-
-    footer { text-align: center; margin-top: 40px; padding: 20px 0; color: #888; font-size: 0.85rem; border-top: 1px solid #f0e4e8; }
-
-    @media (max-width: 600px) {
-      .nav-links { display: none; }
-      body { padding-top: 60px; }
-      .container { width: 95%; padding: 15px; }
-    }
   </style>
 </head>
 <body>
 
 <header class="navbar">
-  <a href="#home" class="navbar-brand">✨ Studio & Salão de Beleza</a>
-  <ul class="nav-links">
-    <li><a href="#home">Início</a></li>
-    <li><a href="#agendar">Agendar</a></li>
-    <li><a href="#local">Localização</a></li>
-    <li><a href="#galeria">Galeria</a></li>
-  </ul>
+  <a href="#" class="navbar-brand">✨ Studio & Salão PWA</a>
 </header>
 
-<div class="container animate-fade-in" id="home">
-  
-  <section class="hero-section">
-    <div class="schedule-badge" id="displayHorarioTxt">TER - SÁB | 08H - 19H</div>
-    <h1 class="hero-title">Studio de Beleza</h1>
-    <p class="hero-subtitle">Cuidando da sua autoestima em um ambiente climatizado e exclusivo</p>
+<div class="container" id="home">
+  <section style="text-align: center; margin-bottom: 30px;">
+    <h1>Agende seu Horário</h1>
+    <p style="color:#777;">Funciona no App PWA e Sincroniza em Tempo Real</p>
   </section>
 
-  <div id="agendar">
-    <div class="step hover-scale">
-      <h2>1. Escolha a Profissional</h2>
-      <div class="barbeiros-grid" id="barbeirosGrid"></div>
-    </div>
-
-    <div class="step hover-scale">
-      <h2>2. Escolha o Serviço</h2>
-      <select id="servicoSelect">
-        <option value="">Primeiro escolha a profissional acima...</option>
-      </select>
-    </div>
-
-    <div class="step hover-scale">
-      <h2>3. Data e Horário</h2>
-      <label for="dataSelect">Selecione a data:</label>
-      <input type="date" id="dataSelect" onchange="validarDataSelecionada()">
-      
-      <label>Horários Disponíveis:</label>
-      <div class="slots-grid" id="slotsGrid">
-        <span style="color: #888; grid-column: 1 / -1;">Selecione uma profissional e a data acima...</span>
-      </div>
-    </div>
-
-    <div class="step hover-scale">
-      <h2>4. Seus Dados</h2>
-      <input type="text" id="nomeCliente" placeholder="Seu Nome Completo">
-      <input type="email" id="emailCliente" placeholder="Seu E-mail para Confirmação">
-      <input type="text" id="whatsCliente" placeholder="Seu WhatsApp (Ex: 13999999999)">
-      
-      <button class="submit-btn hover-scale" onclick="confirmarAgendamento()">Confirmar Agendamento</button>
-    </div>
-
-    <div class="confirmation-box" id="confirmationBox">
-      <h3 style="color: #15803d;">✅ Agendamento Confirmado!</h3>
-      <p id="detailsText" style="margin-top: 10px; margin-bottom: 15px; line-height: 1.5; color: #333;"></p>
-      
-      <a id="calendarLink" href="#" target="_blank" class="action-btn calendar-action hover-scale">📅 Adicionar à Google Agenda</a>
-    </div>
-
+  <div class="step">
+    <h2>1. Escolha a Profissional</h2>
+    <div class="barbeiros-grid" id="barbeirosGrid"></div>
   </div>
 
-  <section class="section-standard" id="local">
-    <h2>📍 Nossa Localização</h2>
-    <p id="displayEndereco" style="text-align: center; color: var(--primary-color); margin-bottom: 15px; font-weight: bold;">
-      Rua Santo Antônio, 622 - Vila Caiçara - Praia Grande/SP
-    </p>
-    <div class="map-wrapper">
-      <iframe id="iframeMapa" title="Mapa do Salão" src="https://maps.google.com/maps?q=Rua%20Santo%20Ant%C3%B4nio,%20622%20-%20Vila%20Cai%C3%A7ara%20-%20Praia%20Grande/SP&t=&z=15&ie=UTF8&iwloc=&output=embed" width="100%" height="100%" style="border:0;" loading="lazy"></iframe>
-    </div>
-  </section>
+  <div class="step">
+    <h2>2. Escolha o Serviço</h2>
+    <select id="servicoSelect"><option value="">Selecione uma profissional...</option></select>
+  </div>
 
-  <section class="section-standard" id="galeria">
-    <h2>📸 Galeria do Nosso Espaço</h2>
-    <div class="gallery-grid">
-      <div class="gallery-item hover-scale"><img id="displayFoto1" src="https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400" alt="Galeria 1"></div>
-      <div class="gallery-item hover-scale"><img id="displayFoto2" src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400" alt="Galeria 2"></div>
-      <div class="gallery-item hover-scale"><img id="displayFoto3" src="https://images.unsplash.com/photo-1562322140-8baeececf3df?w=400" alt="Galeria 3"></div>
-      <div class="gallery-item hover-scale"><img id="displayFoto4" src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400" alt="Galeria 4"></div>
-    </div>
-  </section>
+  <div class="step">
+    <h2>3. Data e Horário</h2>
+    <input type="date" id="dataSelect" onchange="gerarHorarios()">
+    <div class="slots-grid" id="slotsGrid"></div>
+  </div>
 
-  <footer>
-    <p>© 2026 <strong>Studio & Salão de Beleza</strong>. Todos os direitos reservados.</p>
-  </footer>
+  <div class="step">
+    <h2>4. Seus Dados</h2>
+    <input type="text" id="nomeCliente" placeholder="Seu Nome Completo">
+    <input type="email" id="emailCliente" placeholder="Seu E-mail">
+    <input type="text" id="whatsCliente" placeholder="Seu WhatsApp (Ex: 13999999999)">
+    <button class="submit-btn" onclick="confirmarAgendamento()">Confirmar Agendamento</button>
+  </div>
 
+  <div class="confirmation-box" id="confirmationBox">
+    <h3 style="color: #15803d;">✅ Agendamento Confirmado!</h3>
+    <p id="detailsText" style="margin-top:10px;"></p>
+  </div>
 </div>
-
-<a id="linkWhatsFloat" href="https://api.whatsapp.com/send/?phone=5513999999999" target="_blank" class="whatsapp-float hover-scale" aria-label="Abrir WhatsApp">
-  💬
-</a>
 
 <script>
   let barbeiroSelecionadoObj = null;
   let horarioSelecionado = '';
-  const todosHorariosPadrao = ['08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00'];
-  const fotoPadrao = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150';
 
-  function aplicarConfiguracoesSite() {
-    const configSite = JSON.parse(localStorage.getItem('configSite')) || {};
-
-    if (configSite.corPrincipal) {
-      document.documentElement.style.setProperty('--primary-color', configSite.corPrincipal);
-    }
-    if (configSite.corFundo) {
-      document.documentElement.style.setProperty('--bg-color', configSite.corFundo);
-    }
-
-    if (configSite.horarioTxt) document.getElementById('displayHorarioTxt').innerText = configSite.horarioTxt;
-    if (configSite.endereco) {
-      document.getElementById('displayEndereco').innerText = configSite.endereco;
-      const enderecoFormatado = encodeURIComponent(configSite.endereco);
-      document.getElementById('iframeMapa').src = `https://maps.google.com/maps?q=${enderecoFormatado}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
-    }
-    if (configSite.whats) {
-      document.getElementById('linkWhatsFloat').href = `https://api.whatsapp.com/send/?phone=${configSite.whats}&text=Ol%C3%A1%2C+gostaria+de+tirar+uma+d%C3%BAvida%21`;
-    }
-    if (configSite.foto1) document.getElementById('displayFoto1').src = configSite.foto1;
-    if (configSite.foto2) document.getElementById('displayFoto2').src = configSite.foto2;
-    if (configSite.foto3) document.getElementById('displayFoto3').src = configSite.foto3;
-    if (configSite.foto4) document.getElementById('displayFoto4').src = configSite.foto4;
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js');
   }
 
-  function configurarDataMinima() {
-    const hoje = new Date();
-    const ano = hoje.getFullYear();
-    const mes = String(hoje.getMonth() + 1).padStart(2, '0');
-    const dia = String(hoje.getDate()).padStart(2, '0');
+  async function carregarBarbeirosSync() {
+    try {
+      const res = await fetch('/api/barbeiros');
+      const data = await res.json();
+      if (!data.offline) localStorage.setItem('barbeiros', JSON.stringify(data));
+    } catch(e){}
 
-    const inputData = document.getElementById('dataSelect');
-    if (inputData) {
-      inputData.setAttribute('min', `${ano}-${mes}-${dia}`);
-    }
-  }
-
-  function validarDataSelecionada() {
-    const inputData = document.getElementById('dataSelect');
-    const dataVal = inputData.value;
-    if (!dataVal) return;
-
-    const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0);
-
-    const [ano, mes, dia] = dataVal.split('-');
-    const dataEscolhida = new Date(ano, mes - 1, dia);
-
-    if (dataEscolhida < hoje) {
-      alert('Não é possível agendar em datas passadas.');
-      inputData.value = '';
-      gerarHorarios();
-      return;
-    }
-
-    gerarHorarios();
-  }
-
-  function carregarBarbeiros() {
+    const barbeiros = JSON.parse(localStorage.getItem('barbeiros')) || [];
     const grid = document.getElementById('barbeirosGrid');
-    const dataLocal = localStorage.getItem('barbeiros');
-    let barbeiros = dataLocal ? JSON.parse(dataLocal) : [{ id: 1, nome: 'Mariana Costa', foto: fotoPadrao }];
-
     grid.innerHTML = '';
-
+    
     barbeiros.forEach(b => {
       const card = document.createElement('div');
-      card.className = 'barbeiro-card hover-scale';
+      card.className = 'barbeiro-card';
       card.onclick = () => {
         document.querySelectorAll('.barbeiro-card').forEach(c => c.classList.remove('selected'));
         card.classList.add('selected');
@@ -275,76 +103,43 @@
         carregarServicosDoBarbeiro(b.id || b._id);
         gerarHorarios();
       };
-      card.innerHTML = `
-        <img src="${b.foto || fotoPadrao}" alt="${b.nome}">
-        <div>${b.nome}</div>
-      `;
+      card.innerHTML = `<img src="${b.foto || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'}"><div>${b.nome}</div>`;
       grid.appendChild(card);
     });
   }
 
-  function carregarServicosDoBarbeiro(barbeiroId) {
+  function carregarServicosDoBarbeiro(id) {
     const configServicos = JSON.parse(localStorage.getItem('servicosPorBarbeiro')) || {};
-    const servicosBarbeiro = configServicos[barbeiroId] || [
-      { id: 1, nome: 'Escova & Modelagem', preco: 60.00, pctProfissional: 40 },
-      { id: 2, nome: 'Manicure Completa', preco: 35.00, pctProfissional: 50 }
-    ];
-
+    const list = configServicos[id] || [{ id:1, nome: 'Escova', preco: 60, pctProfissional: 40 }];
     const select = document.getElementById('servicoSelect');
-    if (servicosBarbeiro.length === 0) {
-      select.innerHTML = '<option value="">Sem serviços cadastrados para esta profissional</option>';
-      return;
-    }
-
-    select.innerHTML = '<option value="">Selecione um serviço...</option>';
-    servicosBarbeiro.forEach(s => {
-      const pct = s.pctProfissional !== undefined ? s.pctProfissional : 40;
-      const option = document.createElement('option');
-      option.value = `${s.nome}|${s.preco}|${pct}`;
-      option.textContent = `${s.nome} - R$ ${parseFloat(s.preco).toFixed(2).replace('.', ',')}`;
-      select.appendChild(option);
+    select.innerHTML = '<option value="">Selecione...</option>';
+    list.forEach(s => {
+      select.innerHTML += `<option value="${s.nome}|${s.preco}|${s.pctProfissional || 40}">${s.nome} - R$ ${s.preco.toFixed(2)}</option>`;
     });
   }
 
-  function gerarHorarios() {
+  async function gerarHorarios() {
     const grid = document.getElementById('slotsGrid');
     const dataVal = document.getElementById('dataSelect').value;
+    if (!dataVal || !barbeiroSelecionadoObj) return;
 
-    if (!dataVal || !barbeiroSelecionadoObj) {
-      grid.innerHTML = '<span style="color: #888; grid-column: 1 / -1;">Selecione a profissional e a data acima...</span>';
-      return;
-    }
+    try {
+      const res = await fetch('/api/agendamentos');
+      const apiAgendamentos = await res.json();
+      if (!apiAgendamentos.offline) localStorage.setItem('agendamentos', JSON.stringify(apiAgendamentos));
+    } catch(e){}
 
-    const partesData = dataVal.split('-');
-    const dataObj = new Date(partesData[0], partesData[1] - 1, partesData[2]);
-    const diaSemana = dataObj.getDay();
-
-    const configDias = JSON.parse(localStorage.getItem('diasAtendimentoPorBarbeiro')) || {};
-    const barbeiroId = barbeiroSelecionadoObj.id || barbeiroSelecionadoObj._id;
-    const diasPermitidos = configDias[barbeiroId] || [1, 2, 3, 4, 5, 6];
-
-    if (!diasPermitidos.includes(diaSemana)) {
-      grid.innerHTML = `<span style="color: #dc2626; grid-column: 1 / -1; font-weight: bold;">⚠️ ${barbeiroSelecionadoObj.nome} não atende neste dia.</span>`;
-      return;
-    }
-
-    const configHorarios = JSON.parse(localStorage.getItem('horariosPorBarbeiro')) || {};
-    const horariosBarbeiro = configHorarios[barbeiroId] || todosHorariosPadrao;
-
-    const agendamentosLocal = JSON.parse(localStorage.getItem('agendamentos')) || [];
-    const ocupadosLocal = agendamentosLocal
-      .filter(a => a.data === dataVal && a.barbeiro === barbeiroSelecionadoObj.nome)
-      .map(a => a.hora);
+    const agendamentos = JSON.parse(localStorage.getItem('agendamentos')) || [];
+    const ocupados = agendamentos.filter(a => a.data === dataVal && a.barbeiro === barbeiroSelecionadoObj.nome).map(a => a.hora);
+    const horarios = ['08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00'];
 
     grid.innerHTML = '';
-    horariosBarbeiro.forEach(h => {
+    horarios.forEach(h => {
       const btn = document.createElement('button');
       btn.className = 'slot-btn';
-      
-      if (ocupadosLocal.includes(h)) {
+      if (ocupados.includes(h)) {
         btn.innerText = `${h} (Ocupado)`;
         btn.disabled = true;
-        btn.classList.add('ocupado');
       } else {
         btn.innerText = h;
         btn.onclick = () => {
@@ -357,69 +152,47 @@
     });
   }
 
-  function confirmarAgendamento() {
-    const servicoValue = document.getElementById('servicoSelect').value;
+  async function confirmarAgendamento() {
+    const servicoVal = document.getElementById('servicoSelect').value;
     const data = document.getElementById('dataSelect').value;
     const nome = document.getElementById('nomeCliente').value;
-    const email = document.getElementById('emailCliente').value;
     const whats = document.getElementById('whatsCliente').value;
 
-    if (!barbeiroSelecionadoObj || !servicoValue || !data || !horarioSelecionado || !nome || !email || !whats) {
-      alert('Por favor, preencha todos os campos, incluindo o seu WhatsApp!');
-      return;
+    if (!barbeiroSelecionadoObj || !servicoVal || !data || !horarioSelecionado || !nome || !whats) {
+      return alert('Preencha todos os campos!');
     }
 
-    const whatsLimpo = whats.replace(/\D/g, '');
-    const [servicoNome, servicoPreco, servicoPct] = servicoValue.split('|');
-    const dataFormatada = data.split('-').reverse().join('/');
-    const box = document.getElementById('confirmationBox');
-
-    const agendamentos = JSON.parse(localStorage.getItem('agendamentos')) || [];
-    agendamentos.push({
+    const [servicoNome, servicoPreco, pct] = servicoVal.split('|');
+    const novoAgendamento = {
       id: Date.now().toString(),
       cliente: nome,
-      email: email,
-      whats: whatsLimpo,
+      whats: whats.replace(/\D/g, ''),
       barbeiro: barbeiroSelecionadoObj.nome,
       servico: servicoNome,
       preco: parseFloat(servicoPreco),
-      pctProfissional: parseFloat(servicoPct || 40),
-      data: data,
+      pctProfissional: parseFloat(pct),
+      data,
       hora: horarioSelecionado
-    });
+    };
+
+    const agendamentos = JSON.parse(localStorage.getItem('agendamentos')) || [];
+    agendamentos.push(novoAgendamento);
     localStorage.setItem('agendamentos', JSON.stringify(agendamentos));
 
-    document.getElementById('detailsText').innerHTML = `
-      <b>Cliente:</b> ${nome}<br>
-      <b>E-mail:</b> ${email}<br>
-      <b>WhatsApp:</b> ${whatsLimpo}<br>
-      <b>Profissional:</b> ${barbeiroSelecionadoObj.nome}<br>
-      <b>Serviço:</b> ${servicoNome} (R$ ${parseFloat(servicoPreco).toFixed(2).replace('.', ',')})<br>
-      <b>Data/Hora:</b> ${dataFormatada} às ${horarioSelecionado}hs
-    `;
+    try {
+      await fetch('/api/enviar-email-confirmacao', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(novoAgendamento)
+      });
+    } catch(e){}
 
-    const [ano, mes, dia] = data.split('-');
-    const [hora, min] = horarioSelecionado.split(':');
-    const dataInicio = `${ano}${mes}${dia}T${hora}${min}00`;
-    const horaFimNum = parseInt(hora) + 1;
-    const horaFim = (horaFimNum < 10 ? '0' : '') + horaFimNum + min + '00';
-    const dataFim = `${ano}${mes}${dia}T${horaFim}`;
-
-    const tituloAgenda = encodeURIComponent(`Atendimento no Salão com ${barbeiroSelecionadoObj.nome}`);
-    const detalhesAgenda = encodeURIComponent(`Serviço: ${servicoNome}\nProfissional: ${barbeiroSelecionadoObj.nome}`);
-    document.getElementById('calendarLink').href = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${tituloAgenda}&dates=${dataInicio}/${dataFim}&details=${detalhesAgenda}`;
-
-    box.style.display = 'block';
-    box.scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('detailsText').innerText = `Agendado para ${data.split('-').reverse().join('/')} às ${horarioSelecionado}hs com ${barbeiroSelecionadoObj.nome}.`;
+    document.getElementById('confirmationBox').style.display = 'block';
     gerarHorarios();
   }
 
-  window.addEventListener('DOMContentLoaded', () => {
-    aplicarConfiguracoesSite();
-    configurarDataMinima();
-    carregarBarbeiros();
-  });
+  window.addEventListener('DOMContentLoaded', carregarBarbeirosSync);
 </script>
-
 </body>
 </html>
