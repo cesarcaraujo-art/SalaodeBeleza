@@ -9,7 +9,6 @@ app.use(express.json({ limit: '20mb' }));
 
 const DB_FILE = path.join(__dirname, 'db.json');
 
-// Inicializa o arquivo db.json caso não exista
 if (!fs.existsSync(DB_FILE)) {
   const dadosIniciais = {
     barbeiros: [{ id: "1", nome: "Mariana Costa", foto: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" }],
@@ -33,7 +32,6 @@ function salvarBanco(data) {
   fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
 }
 
-// ROTAS API
 app.get('/api/ping', (req, res) => res.json({ status: 'OK' }));
 
 app.get('/api/config-site', (req, res) => {
@@ -81,7 +79,6 @@ app.delete('/api/agendamentos/:id', (req, res) => {
   res.json({ sucesso: true });
 });
 
-// ROTAS DE PRODUTOS E VENDAS
 app.get('/api/produtos', (req, res) => {
   const db = lerBanco();
   res.json(db.produtos || []);
