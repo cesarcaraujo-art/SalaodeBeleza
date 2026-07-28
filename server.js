@@ -9,11 +9,13 @@ app.use(express.json({ limit: '20mb' }));
 
 const DB_FILE = path.join(__dirname, 'db.json');
 
-// Inicializa a base de dados em arquivo local se não existir
+// Inicializa o arquivo db.json caso não exista
 if (!fs.existsSync(DB_FILE)) {
   const dadosIniciais = {
     barbeiros: [{ id: "1", nome: "Mariana Costa", foto: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" }],
     agendamentos: [],
+    produtos: [],
+    vendasAvulsas: [],
     configSite: {
       whats: "5513999999999",
       horarioTxt: "TER - SÁB | 08H - 19H",
@@ -31,7 +33,7 @@ function salvarBanco(data) {
   fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
 }
 
-// ROTAS
+// ROTAS API
 app.get('/api/ping', (req, res) => res.json({ status: 'OK' }));
 
 app.get('/api/config-site', (req, res) => {
@@ -79,5 +81,34 @@ app.delete('/api/agendamentos/:id', (req, res) => {
   res.json({ sucesso: true });
 });
 
+// ROTAS DE PRODUTOS E VENDAS
+app.get('/api/produtos', (req, res) => {
+  const db = lerBanco();
+  res.json(db.produtos || []);
+});
+
+app.post('/api/produtos', (req, res) => {
+  const db = lerBanco();
+  const novo = { id: Date.now().toString(), ...req.body };
+  db.produtos = db.produtos || [];
+  db.produtos.push(novo);
+  salvarBanco(db);
+  res.json({ sucesso: true, produto: novo });
+});
+
+app.get('/api/vendas', (req, res) => {
+  const db = lerBanco();
+  res.json(db.vendasAvulsas || []);
+});
+
+app.post('/api/vendas', (req, res) => {
+  const db = lerBanco();
+  const novaVenda = { id: Date.now().toString(), ...req.body };
+  db.vendasAvulsas = db.vendasAvulsas || [];
+  db.vendasAvulsas.push(novaVenda);
+  salvarBanco(db);
+  res.json({ sucesso: true, venda: novaVenda });
+});
+
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Servidor local rodando sem banco de dados na porta ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Servidor rodando na porta ${PORT}`));
