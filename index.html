@@ -286,8 +286,8 @@
   function carregarServicosDoBarbeiro(barbeiroId) {
     const configServicos = JSON.parse(localStorage.getItem('servicosPorBarbeiro')) || {};
     const servicosBarbeiro = configServicos[barbeiroId] || [
-      { id: 1, nome: 'Escova & Modelagem', preco: 60.00 },
-      { id: 2, nome: 'Manicure Completa', preco: 35.00 }
+      { id: 1, nome: 'Escova & Modelagem', preco: 60.00, pctProfissional: 40 },
+      { id: 2, nome: 'Manicure Completa', preco: 35.00, pctProfissional: 50 }
     ];
 
     const select = document.getElementById('servicoSelect');
@@ -298,8 +298,9 @@
 
     select.innerHTML = '<option value="">Selecione um serviço...</option>';
     servicosBarbeiro.forEach(s => {
+      const pct = s.pctProfissional !== undefined ? s.pctProfissional : 40;
       const option = document.createElement('option');
-      option.value = `${s.nome}|${s.preco}`;
+      option.value = `${s.nome}|${s.preco}|${pct}`;
       option.textContent = `${s.nome} - R$ ${parseFloat(s.preco).toFixed(2).replace('.', ',')}`;
       select.appendChild(option);
     });
@@ -369,7 +370,7 @@
     }
 
     const whatsLimpo = whats.replace(/\D/g, '');
-    const [servicoNome, servicoPreco] = servicoValue.split('|');
+    const [servicoNome, servicoPreco, servicoPct] = servicoValue.split('|');
     const dataFormatada = data.split('-').reverse().join('/');
     const box = document.getElementById('confirmationBox');
 
@@ -382,6 +383,7 @@
       barbeiro: barbeiroSelecionadoObj.nome,
       servico: servicoNome,
       preco: parseFloat(servicoPreco),
+      pctProfissional: parseFloat(servicoPct || 40),
       data: data,
       hora: horarioSelecionado
     });
