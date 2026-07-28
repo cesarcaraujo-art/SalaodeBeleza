@@ -169,14 +169,48 @@
 
     <!-- FATURAMENTO -->
     <div id="faturamentoTab" class="tab-content" style="display: none;">
+      <div class="admin-card">
+        <label>📅 Filtro de Período:</label>
+        <div style="display: flex; gap: 10px;">
+          <div style="flex: 1;">
+            <label style="font-size: 0.8rem; font-weight: normal;">Selecione o Mês:</label>
+            <select id="selectMesFat" onchange="renderizarFaturamento()">
+              <option value="0">Janeiro</option>
+              <option value="1">Fevereiro</option>
+              <option value="2">Março</option>
+              <option value="3">Abril</option>
+              <option value="4">Maio</option>
+              <option value="5">Junho</option>
+              <option value="6">Julho</option>
+              <option value="7">Agosto</option>
+              <option value="8">Setembro</option>
+              <option value="9">Outubro</option>
+              <option value="10">Novembro</option>
+              <option value="11">Dezembro</option>
+            </select>
+          </div>
+          <div style="flex: 1;">
+            <label style="font-size: 0.8rem; font-weight: normal;">Selecione a Semana:</label>
+            <select id="selectSemanaFat" onchange="renderizarFaturamento()">
+              <option value="todas">Todas as Semanas</option>
+              <option value="1">1ª Semana (Dias 01 a 07)</option>
+              <option value="2">2ª Semana (Dias 08 a 14)</option>
+              <option value="3">3ª Semana (Dias 15 a 21)</option>
+              <option value="4">4ª Semana (Dias 22 a 28)</option>
+              <option value="5">5ª Semana (Dias 29 em diante)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
       <div class="metrics-grid">
         <div class="metric-card">
-          <h3>Faturamento Semanal</h3>
-          <p id="fatSemanal">R$ 0,00</p>
+          <h3>Faturamento no Período</h3>
+          <p id="fatFiltrado">R$ 0,00</p>
         </div>
         <div class="metric-card">
-          <h3>Faturamento Mensal</h3>
-          <p id="fatMensal">R$ 0,00</p>
+          <h3>Faturamento do Mês Inteiro</h3>
+          <p id="fatMensalTotal">R$ 0,00</p>
         </div>
       </div>
       <label>Histórico de Entradas (Serviços e Vendas):</label>
@@ -332,7 +366,11 @@
     if (abaAtiva.includes('horariosTab')) renderizarHorariosConfig();
     if (abaAtiva.includes('servicosTab')) renderizarServicos();
     if (abaAtiva.includes('produtosTab')) renderizarProdutos();
-    if (abaAtiva.includes('faturamentoTab')) renderizarFaturamento();
+    if (abaAtiva.includes('faturamentoTab')) {
+      const hoje = new Date();
+      document.getElementById('selectMesFat').value = hoje.getMonth();
+      renderizarFaturamento();
+    }
     if (abaAtiva.includes('perfilTab')) renderizarBarbeiros();
     if (abaAtiva.includes('siteTab')) carregarConfiguracoesSite();
   }
@@ -502,22 +540,18 @@
     renderizarProdutos();
   }
 
-  /* FATURAMENTO SEMANAL E MENSAL */
+  /* FATURAMENTO PERSONALIZADO POR MÊS E SEMANA */
   function renderizarFaturamento() {
     const agendamentos = JSON.parse(localStorage.getItem('agendamentos')) || [];
     const vendasAvulsas = JSON.parse(localStorage.getItem('vendasAvulsas')) || [];
     const container = document.getElementById('listaHistoricoVendas');
     container.innerHTML = '';
 
-    let totalSemanal = 0;
+    const mesSelecionado = parseInt(document.getElementById('selectMesFat').value);
+    const semanaSelecionada = document.getElementById('selectSemanaFat').value;
+
+    let totalFiltrado = 0;
     let totalMensal = 0;
-
-    const hoje = new Date();
-    const inicioSemana = new Date(hoje);
-    inicioSemana.setDate(hoje.getDate() - hoje.getDay());
-    inicioSemana.setHours(0, 0, 0, 0);
-
-    const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
 
     const historicoGeral = [];
 
@@ -536,24 +570,51 @@
     historicoGeral.sort((a, b) => b.dataObj - a.dataObj);
 
     historicoGeral.forEach(item => {
-      if (item.dataObj >= inicioSemana) totalSemanal += item.valor;
-      if (item.dataObj >= inicioMes) totalMensal += item.valor;
+      const itemMes = item.dataObj.getMonth();
+      const itemDia = item.dataObj.getDate();
 
-      const card = document.createElement('div');
-      card.className = 'agenda-card';
-      card.style.borderLeftColor = item.tipo === 'Serviço' ? '#8e3a59' : '#15803d';
-      card.innerHTML = `
-        <div class="agenda-header">
-          <span>${item.tipo === 'Serviço' ? '✂️' : '📦'} ${item.descricao}</span>
-          <span>R$ ${item.valor.toFixed(2).replace('.', ',')}</span>
-        </div>
-        <div style="font-size:0.85rem; color:#666;">Data: ${item.dataTxt.split('-').reverse().join('/')}</div>
-      `;
-      container.appendChild(card);
+      if (itemMes === mesSelecionado) {
+        totalMensal += item.valor;
+
+        let pertenceSemana = false;
+        if (semanaSelecionada === 'todas') {
+          pertenceSemana = true;
+        } else if (semanaSelecionada === '1' && itemDia >= 1 && itemDia <= 7) {
+          pertenceSemana = true;
+        } else if (semanaSelecionada === '2' && itemDia >= 8 && itemDia <= 14) {
+          pertenceSemana = true;
+        } else if (semanaSelecionada === '3' && itemDia >= 15 && itemDia <= 21) {
+          pertenceSemana = true;
+        } else if (semanaSelecionada === '4' && itemDia >= 22 && itemDia <= 28) {
+          pertenceSemana = true;
+        } else if (semanaSelecionada === '5' && itemDia >= 29) {
+          pertenceSemana = true;
+        }
+
+        if (pertenceSemana) {
+          totalFiltrado += item.valor;
+
+          const card = document.createElement('div');
+          card.className = 'agenda-card';
+          card.style.borderLeftColor = item.tipo === 'Serviço' ? '#8e3a59' : '#15803d';
+          card.innerHTML = `
+            <div class="agenda-header">
+              <span>${item.tipo === 'Serviço' ? '✂️' : '📦'} ${item.descricao}</span>
+              <span>R$ ${item.valor.toFixed(2).replace('.', ',')}</span>
+            </div>
+            <div style="font-size:0.85rem; color:#666;">Data: ${item.dataTxt.split('-').reverse().join('/')}</div>
+          `;
+          container.appendChild(card);
+        }
+      }
     });
 
-    document.getElementById('fatSemanal').innerText = `R$ ${totalSemanal.toFixed(2).replace('.', ',')}`;
-    document.getElementById('fatMensal').innerText = `R$ ${totalMensal.toFixed(2).replace('.', ',')}`;
+    if (container.children.length === 0) {
+      container.innerHTML = '<p style="color:#888; text-align:center; padding:20px;">Nenhuma entrada registrada para este período.</p>';
+    }
+
+    document.getElementById('fatFiltrado').innerText = `R$ ${totalFiltrado.toFixed(2).replace('.', ',')}`;
+    document.getElementById('fatMensalTotal').innerText = `R$ ${totalMensal.toFixed(2).replace('.', ',')}`;
   }
 
   function carregarDiasAtendimento() {
